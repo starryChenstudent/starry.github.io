@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>值日轮值系统 - 登录</title>
 <style>
   /* 全局样式 */
@@ -37,6 +38,25 @@
     padding: 30px 25px;
     border-radius: 14px;
     box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    width: 100%;
+  }
+  
+  /* 响应式样式 */
+  @media (max-width: 768px) {
+    .container {
+      width: 95%;
+      padding: 10px;
+    }
+    h1 {
+      font-size: 1.8em;
+      padding: 0 0 15px 0;
+    }
+    .login-form {
+      padding: 20px 15px;
+    }
+    .btn {
+      padding: 10px 15px;
+    }
   }
   
   .form-group {
