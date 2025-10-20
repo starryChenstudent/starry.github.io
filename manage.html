@@ -123,50 +123,36 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
-    margin-bottom: 8px;
-    background-color: #f8f9fa;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    background: #f8f9fa;
     border-radius: 8px;
-    transition: all 0.2s ease;
-    cursor: move; /* 指示可拖动 */
-    user-select: none; /* 防止文本被选中 */
-  }
-  
-  .member-item:hover {
-    background-color: #e9ecef;
-  }
-  
-  .member-item.dragging {
-    opacity: 0.5;
-    background-color: #d1e7ff;
-    box-shadow: 0 0 10px rgba(0,0,0,0.15);
-  }
-  
-  .member-item.drag-over {
-    border: 2px dashed #1e3d59;
-    padding: 8px;
   }
   
   .member-name {
-    font-weight: bold;
-    display: flex;
-    align-items: center;
+    font-size: 1.1em;
+    flex: 1;
   }
   
-  .member-name::before {
-    content: "☰";
-    margin-right: 10px;
-    color: #aaa;
+  .member-actions {
+    display: flex;
+    gap: 5px;
   }
   
   .member-actions button {
-    padding: 5px 10px;
-    margin-left: 5px;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-    background-color: #e74c3c;
+    background: #dc3545;
     color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .move-btn {
+    background: #1e3d59 !important;
+    font-size: 1.2em;
+    width: 36px;
+    height: 36px;
   }
   
   /* 导航链接 */
@@ -373,20 +359,12 @@ function displayMembers() {
     return;
   }
   
-  members.forEach(name => {
+  members.forEach((name, index) => {
     const memberItem = document.createElement('div');
     memberItem.className = 'member-item';
-    memberItem.draggable = true;
     memberItem.dataset.name = name;
     memberItem.dataset.area = area;
-    
-    // 添加拖拽事件监听器
-    memberItem.addEventListener('dragstart', handleDragStart);
-    memberItem.addEventListener('dragover', handleDragOver);
-    memberItem.addEventListener('dragenter', handleDragEnter);
-    memberItem.addEventListener('dragleave', handleDragLeave);
-    memberItem.addEventListener('drop', handleDrop);
-    memberItem.addEventListener('dragend', handleDragEnd);
+    memberItem.dataset.index = index;
     
     const memberName = document.createElement('div');
     memberName.className = 'member-name';
@@ -394,6 +372,24 @@ function displayMembers() {
     
     const memberActions = document.createElement('div');
     memberActions.className = 'member-actions';
+    
+    // 添加上移按钮
+    if (index > 0) {
+      const upButton = document.createElement('button');
+      upButton.textContent = '↑';
+      upButton.className = 'move-btn';
+      upButton.onclick = () => moveUp(area, index);
+      memberActions.appendChild(upButton);
+    }
+    
+    // 添加下移按钮
+    if (index < members.length - 1) {
+      const downButton = document.createElement('button');
+      downButton.textContent = '↓';
+      downButton.className = 'move-btn';
+      downButton.onclick = () => moveDown(area, index);
+      memberActions.appendChild(downButton);
+    }
     
     const deleteButton = document.createElement('button');
     deleteButton.textContent = '删除';
@@ -406,88 +402,95 @@ function displayMembers() {
   });
 }
 
-// 拖拽相关变量
-let draggedItem = null;
-
-// 拖拽开始
-function handleDragStart(e) {
-  draggedItem = this;
-  this.classList.add('dragging');
+// 上下移动成员函数
+function moveUp(area, index) {
+  if (index <= 0) return;
   
-  // 设置拖拽数据
-  e.dataTransfer.effectAllowed = 'move';
-  e.dataTransfer.setData('text/plain', this.dataset.name);
-}
-
-// 拖拽经过
-function handleDragOver(e) {
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-}
-
-// 拖拽进入
-function handleDragEnter(e) {
-  e.preventDefault();
-  this.classList.add('drag-over');
-}
-
-// 拖拽离开
-function handleDragLeave() {
-  this.classList.remove('drag-over');
-}
-
-// 放置
-function handleDrop(e) {
-  e.stopPropagation();
-  
-  if (draggedItem !== this) {
-    // 获取当前区域和成员列表
-    const area = this.dataset.area;
-    let members = [];
-    
-    switch(area) {
-      case 'publicArea':
-        members = publicArea;
-        break;
-      case 'southArea':
-        members = southArea;
-        break;
-      case 'northArea':
-        members = northArea;
-        break;
-    }
-    
-    // 获取拖拽项和目标项的索引
-    const draggedIndex = members.indexOf(draggedItem.dataset.name);
-    const targetIndex = members.indexOf(this.dataset.name);
-    
-    // 重新排序
-    if (draggedIndex !== -1 && targetIndex !== -1) {
-      // 移除拖拽项
-      members.splice(draggedIndex, 1);
-      
-      // 在目标位置插入拖拽项
-      members.splice(targetIndex, 0, draggedItem.dataset.name);
-      
-      // 保存更新后的顺序
-      saveData();
-      
-      // 重新显示列表
-      displayMembers();
-    }
+  let members = [];
+  switch(area) {
+    case 'publicArea':
+      members = publicArea;
+      break;
+    case 'southArea':
+      members = southArea;
+      break;
+    case 'northArea':
+      members = northArea;
+      break;
   }
   
-  return false;
+  // 交换位置
+  const temp = members[index];
+  members[index] = members[index - 1];
+  members[index - 1] = temp;
+  
+  // 更新对应的区域数组
+  switch(area) {
+    case 'publicArea':
+      publicArea = members;
+      break;
+    case 'southArea':
+      southArea = members;
+      break;
+    case 'northArea':
+      northArea = members;
+      break;
+  }
+  
+  // 重新显示成员列表
+  displayMembers();
+  
+  // 显示保存提示
+  const saveStatus = document.getElementById('saveStatus');
+  if (saveStatus) {
+    saveStatus.textContent = '顺序已更改，请点击"保存修改"按钮保存';
+    saveStatus.style.display = 'block';
+  }
 }
 
-// 拖拽结束
-function handleDragEnd() {
-  this.classList.remove('dragging');
+function moveDown(area, index) {
+  let members = [];
+  switch(area) {
+    case 'publicArea':
+      members = publicArea;
+      break;
+    case 'southArea':
+      members = southArea;
+      break;
+    case 'northArea':
+      members = northArea;
+      break;
+  }
   
-  // 移除所有元素的drag-over类
-  document.querySelectorAll('.drag-over').forEach(item => {
-    item.classList.remove('drag-over');
-  });
+  if (index >= members.length - 1) return;
+  
+  // 交换位置
+  const temp = members[index];
+  members[index] = members[index + 1];
+  members[index + 1] = temp;
+  
+  // 更新对应的区域数组
+  switch(area) {
+    case 'publicArea':
+      publicArea = members;
+      break;
+    case 'southArea':
+      southArea = members;
+      break;
+    case 'northArea':
+      northArea = members;
+      break;
+  }
+  
+  // 重新显示成员列表
+  displayMembers();
+  
+  // 显示保存提示
+  const saveStatus = document.getElementById('saveStatus');
+  if (saveStatus) {
+    saveStatus.textContent = '顺序已更改，请点击"保存修改"按钮保存';
+    saveStatus.style.display = 'block';
+  }
 }
 
 // 页面加载时显示成员列表
