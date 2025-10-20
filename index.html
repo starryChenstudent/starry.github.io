@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>值日轮值系统</title>
 <style>
   /* 全局样式 */
@@ -81,10 +82,14 @@
   }
 
   /* 响应式 */
-  @media (max-width: 600px) {
+  @media (max-width: 768px) {
     .this-week p { font-size: 1.2em; padding: 16px; margin: 20px 0; }
-    select { margin-left:5px; }
-    .btn { width: 100%; text-align: center; }
+    select { margin-left: 0; width: 100%; margin-top: 5px; }
+    .btn { width: 100%; text-align: center; margin-top: 15px; }
+    label { display: block; margin-bottom: 15px; }
+    .container { width: 95%; padding: 10px; }
+    h1 { padding: 20px 0 10px 0; font-size: 1.8em; }
+    .section { padding: 15px; }
   }
 
 </style>
@@ -94,7 +99,7 @@
 <h1>值日轮值系统</h1>
 
 <div class="nav-links" style="text-align: center; margin-bottom: 20px;">
-  <button onclick="window.location.href='manage.html'" class="btn" style="background: #1e3d59; color: #fff; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-size: 1em; transition: all 0.3s ease;">成员管理</button>
+  <button onclick="window.location.href='login.html'" class="btn" style="background: #1e3d59; color: #fff; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-size: 1em; transition: all 0.3s ease;">成员管理</button>
 </div>
 
 <div class="container">
