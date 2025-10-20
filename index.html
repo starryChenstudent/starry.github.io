@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>值日轮值系统</title>
+<style>
+  /* 全局样式 */
+  body {
+    font-family: "Microsoft YaHei", Arial, sans-serif;
+    background: linear-gradient(to bottom, #e0f0ff, #f0f4f8);
+    margin: 0;
+    padding: 0;
+    color: #333;
+  }
+  h1 {
+    text-align: center;
+    padding: 40px 0 20px 0;
+    color: #1e3d59;
+    font-size: 2.2em;
+    margin: 0;
+  }
+  .container {
+    width: 90%;
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+  }
+
+  /* 区域选择部分 */
+  .section {
+    background: #fff;
+    padding: 25px 20px;
+    margin-bottom: 30px;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  }
+  .section h2 {
+    margin-top: 0;
+    color: #1e3d59;
+    font-size: 1.5em;
+    border-bottom: 2px solid #1e3d59;
+    padding-bottom: 8px;
+  }
+  select {
+    padding: 10px 12px;
+    font-size: 1em;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-left: 10px;
+  }
+  .btn {
+    background: #1e3d59;
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-top: 15px;
+    transition: all 0.3s ease;
+  }
+  .btn:hover {
+    background: #3a5a77;
+    transform: translateY(-2px);
+  }
+
+  /* 本周值日生展示 */
+  .this-week p {
+    font-size: 1.4em;
+    margin: 25px 0;               /* 增加行间距 */
+    padding: 20px 18px;           /* 增加内边距 */
+    border-radius: 12px;
+    background: linear-gradient(to right, #a1c4fd, #c2e9fb);
+    color: #1e3d59;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);  /* 增加阴影 */
+    transition: transform 0.2s ease;
+  }
+  .this-week p:hover {
+    transform: translateY(-3px);
+  }
+
+  /* 响应式 */
+  @media (max-width: 600px) {
+    .this-week p { font-size: 1.2em; padding: 16px; margin: 20px 0; }
+    select { margin-left:5px; }
+    .btn { width: 100%; text-align: center; }
+  }
+
+</style>
+</head>
+<body>
+
+<h1>值日轮值系统</h1>
+
+<div class="nav-links" style="text-align: center; margin-bottom: 20px;">
+  <button onclick="window.location.href='manage.html'" class="btn" style="background: #1e3d59; color: #fff; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-size: 1em; transition: all 0.3s ease;">成员管理</button>
+</div>
+
+<div class="container">
+
+  <div class="section">
+    <h2>选择上周值日生</h2>
+    <div>
+      <label>公共区：
+        <select id="lastPublic"></select>
+      </label>
+    </div>
+    <div>
+      <label>南卧+中卧：
+        <select id="lastSouth"></select>
+      </label>
+    </div>
+    <div>
+      <label>北卧+厅卧：
+        <select id="lastNorth"></select>
+      </label>
+    </div>
+    <button class="btn" onclick="calculateThisWeek()">确定本周值日</button>
+  </div>
+
+  <div class="section this-week">
+    <h2>本周值日生</h2>
+    <p>公共区：<span id="thisPublic">-</span></p>
+    <p>南卧+中卧：<span id="thisSouth">-</span></p>
+    <p>北卧+厅卧：<span id="thisNorth">-</span></p>
+  </div>
+
+</div>
+
+<script>
+// 从localStorage获取区域顺序数据
+function getAreaMembers(areaKey, defaultList) {
+  const savedData = localStorage.getItem(areaKey);
+  return savedData ? JSON.parse(savedData) : defaultList;
+}
+
+// 默认区域顺序数据
+const defaultPublicArea = ["镇","旭","大龙","原","磊","泽","深","淏","叶","飞","学治","勇","清","义志","枫","峰","星宇","茏","龚","军","帆","叶","林","前","哲","圣"];
+const defaultSouthArea = ["叶","峰","浩","学治","深","清","义志","泽","龙","旭","飞","茏","龚","帆"];
+const defaultNorthArea = ["原","枫","磊","星宇","镇","军","前","哲","圣","林","淏"];
+
+// 获取当前区域成员列表
+const publicArea = getAreaMembers("publicAreaMembers", defaultPublicArea);
+const southArea = getAreaMembers("southAreaMembers", defaultSouthArea);
+const northArea = getAreaMembers("northAreaMembers", defaultNorthArea);
+
+// 填充下拉框
+function fillDropdown(id, list) {
+  const sel = document.getElementById(id);
+  sel.innerHTML = "";
+  list.forEach(name => {
+    const opt = document.createElement("option");
+    opt.value = name;
+    opt.text = name;
+    sel.appendChild(opt);
+  });
+}
+
+fillDropdown("lastPublic", publicArea);
+fillDropdown("lastSouth", southArea);
+fillDropdown("lastNorth", northArea);
+
+// 计算本周值日
+function calculateThisWeek() {
+  const lastPublic = document.getElementById("lastPublic").value;
+  const lastSouth = document.getElementById("lastSouth").value;
+  const lastNorth = document.getElementById("lastNorth").value;
+
+  document.getElementById("thisPublic").textContent = nextPerson(publicArea, lastPublic);
+  document.getElementById("thisSouth").textContent = nextPerson(southArea, lastSouth);
+  document.getElementById("thisNorth").textContent = nextPerson(northArea, lastNorth);
+
+  // 保存选择到 localStorage
+  localStorage.setItem("lastPublic", lastPublic);
+  localStorage.setItem("lastSouth", lastSouth);
+  localStorage.setItem("lastNorth", lastNorth);
+}
+
+// 下一个值日生计算函数
+function nextPerson(list, lastName) {
+  const idx = list.indexOf(lastName);
+  if (idx === -1 || idx === list.length-1) return list[0];
+  return list[idx+1];
+}
+
+// 页面加载时，如果有 localStorage 保存，自动填充下拉框
+window.onload = () => {
+  if(localStorage.getItem("lastPublic")) document.getElementById("lastPublic").value = localStorage.getItem("lastPublic");
+  if(localStorage.getItem("lastSouth")) document.getElementById("lastSouth").value = localStorage.getItem("lastSouth");
+  if(localStorage.getItem("lastNorth")) document.getElementById("lastNorth").value = localStorage.getItem("lastNorth");
+  calculateThisWeek();
+}
+</script>
+
+</body>
+</html>

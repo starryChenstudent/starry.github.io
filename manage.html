@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>值日轮值系统 - 成员管理</title>
+<style>
+  /* 全局样式 */
+  body {
+    font-family: "Microsoft YaHei", Arial, sans-serif;
+    background: linear-gradient(to bottom, #e0f0ff, #f0f4f8);
+    margin: 0;
+    padding: 0;
+    color: #333;
+  }
+  h1 {
+    text-align: center;
+    padding: 40px 0 20px 0;
+    color: #1e3d59;
+    font-size: 2.2em;
+    margin: 0;
+  }
+  .container {
+    width: 90%;
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+  }
+
+  /* 区域选择部分 */
+  .section {
+    background: #fff;
+    padding: 25px 20px;
+    margin-bottom: 30px;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  }
+  .section h2 {
+    margin-top: 0;
+    color: #1e3d59;
+    font-size: 1.5em;
+    border-bottom: 2px solid #1e3d59;
+    padding-bottom: 8px;
+  }
+  
+  /* 表单样式 */
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  select, input[type="text"] {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 1em;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+  
+  .btn {
+    background: #1e3d59;
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-top: 15px;
+    transition: all 0.3s ease;
+  }
+  
+  .btn:hover {
+    background: #3a5a77;
+    transform: translateY(-2px);
+  }
+  
+  .btn-danger {
+    background: #e74c3c;
+  }
+  
+  .btn-danger:hover {
+    background: #c0392b;
+  }
+  
+  /* 成员列表样式 */
+  .member-list {
+    margin-top: 20px;
+  }
+  
+  .member-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 8px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    cursor: move; /* 指示可拖动 */
+    user-select: none; /* 防止文本被选中 */
+  }
+  
+  .member-item:hover {
+    background-color: #e9ecef;
+  }
+  
+  .member-item.dragging {
+    opacity: 0.5;
+    background-color: #d1e7ff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.15);
+  }
+  
+  .member-item.drag-over {
+    border: 2px dashed #1e3d59;
+    padding: 8px;
+  }
+  
+  .member-name {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+  }
+  
+  .member-name::before {
+    content: "☰";
+    margin-right: 10px;
+    color: #aaa;
+  }
+  
+  .member-actions button {
+    padding: 5px 10px;
+    margin-left: 5px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    background-color: #e74c3c;
+    color: white;
+  }
+  
+  /* 导航链接 */
+  .nav-links {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .nav-links a {
+    color: #1e3d59;
+    text-decoration: none;
+    margin: 0 10px;
+    font-weight: bold;
+  }
+  
+  .nav-links a:hover {
+    text-decoration: underline;
+  }
+  
+  /* 响应式 */
+  @media (max-width: 600px) {
+    .btn { width: 100%; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<h1>值日轮值系统 - 成员管理</h1>
+
+<div class="container">
+  <div class="nav-links" style="text-align: center; margin-bottom: 20px;">
+    <button onclick="window.location.href='index.html'" class="btn" style="background: #1e3d59; color: #fff; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-size: 1em; transition: all 0.3s ease;">返回主页</button>
+  </div>
+
+  <div class="section">
+    <h2>添加成员</h2>
+    <div class="form-group">
+      <label for="areaSelect">选择区域：</label>
+      <select id="areaSelect">
+        <option value="publicArea">公共区</option>
+        <option value="southArea">南卧+中卧</option>
+        <option value="northArea">北卧+厅卧</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="newMember">成员姓名：</label>
+      <input type="text" id="newMember" placeholder="请输入成员姓名">
+    </div>
+    <button class="btn" onclick="addMember()">添加成员</button>
+  </div>
+
+  <div class="section">
+    <h2>成员列表</h2>
+    <div class="form-group">
+      <label for="viewAreaSelect">查看区域：</label>
+      <select id="viewAreaSelect" onchange="displayMembers()">
+        <option value="publicArea">公共区</option>
+        <option value="southArea">南卧+中卧</option>
+        <option value="northArea">北卧+厅卧</option>
+      </select>
+    </div>
+    <div class="alert" style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+      <strong>提示：</strong>调整成员顺序将直接影响值日轮值顺序。拖动成员可以改变他们的值日顺序。
+    </div>
+    <div id="saveStatus" style="display: none; background-color: #d4edda; color: #155724; padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: center; font-weight: bold;">
+      保存成功！
+    </div>
+    <div id="memberList" class="member-list">
+      <!-- 成员列表将在这里动态生成 -->
+    </div>
+    <button class="btn" onclick="saveData()" style="margin-top: 20px; background-color: #28a745;">保存修改</button>
+  </div>
+</div>
+
+<script>
+// 从localStorage获取区域数据，如果没有则使用默认值
+let publicArea = JSON.parse(localStorage.getItem('publicAreaMembers')) || ["镇","旭","大龙","原","磊","泽","深","淏","叶","飞","学治","勇","清","义志","枫","峰","星宇","茏","龚","军","帆","叶","林","前","哲","圣"];
+let southArea = JSON.parse(localStorage.getItem('southAreaMembers')) || ["叶","峰","浩","学治","深","清","义志","泽","龙","旭","飞","茏","龚","帆"];
+let northArea = JSON.parse(localStorage.getItem('northAreaMembers')) || ["原","枫","磊","星宇","镇","军","前","哲","圣","林","淏"];
+
+// 保存数据到localStorage
+function saveData() {
+  localStorage.setItem('publicAreaMembers', JSON.stringify(publicArea));
+  localStorage.setItem('southAreaMembers', JSON.stringify(southArea));
+  localStorage.setItem('northAreaMembers', JSON.stringify(northArea));
+  
+  // 显示保存成功提示
+  const saveStatus = document.getElementById('saveStatus');
+  if (saveStatus) {
+    saveStatus.textContent = '保存成功！';
+    saveStatus.style.display = 'block';
+    setTimeout(() => {
+      saveStatus.style.display = 'none';
+    }, 2000);
+  }
+}
+
+// 添加成员
+function addMember() {
+  const area = document.getElementById('areaSelect').value;
+  const name = document.getElementById('newMember').value.trim();
+  
+  if (!name) {
+    alert('请输入成员姓名');
+    return;
+  }
+  
+  // 根据选择的区域添加成员
+  switch(area) {
+    case 'publicArea':
+      if (!publicArea.includes(name)) {
+        publicArea.push(name);
+      } else {
+        alert('该成员已存在于公共区');
+        return;
+      }
+      break;
+    case 'southArea':
+      if (!southArea.includes(name)) {
+        southArea.push(name);
+      } else {
+        alert('该成员已存在于南卧+中卧区');
+        return;
+      }
+      break;
+    case 'northArea':
+      if (!northArea.includes(name)) {
+        northArea.push(name);
+      } else {
+        alert('该成员已存在于北卧+厅卧区');
+        return;
+      }
+      break;
+  }
+  
+  // 保存数据并刷新显示
+  saveData();
+  document.getElementById('newMember').value = '';
+  
+  // 如果当前查看的区域与添加的区域相同，则刷新显示
+  if (document.getElementById('viewAreaSelect').value === area) {
+    displayMembers();
+  }
+  
+  alert('成员添加成功');
+}
+
+// 删除成员
+function deleteMember(area, name) {
+  if (confirm(`确定要删除 ${name} 吗？`)) {
+    switch(area) {
+      case 'publicArea':
+        publicArea = publicArea.filter(item => item !== name);
+        break;
+      case 'southArea':
+        southArea = southArea.filter(item => item !== name);
+        break;
+      case 'northArea':
+        northArea = northArea.filter(item => item !== name);
+        break;
+    }
+    
+    // 保存数据并刷新显示
+    saveData();
+    displayMembers();
+  }
+}
+
+// 显示成员列表
+function displayMembers() {
+  const area = document.getElementById('viewAreaSelect').value;
+  const memberListElement = document.getElementById('memberList');
+  memberListElement.innerHTML = '';
+  
+  let members = [];
+  let areaName = '';
+  
+  switch(area) {
+    case 'publicArea':
+      members = publicArea;
+      areaName = '公共区';
+      break;
+    case 'southArea':
+      members = southArea;
+      areaName = '南卧+中卧';
+      break;
+    case 'northArea':
+      members = northArea;
+      areaName = '北卧+厅卧';
+      break;
+  }
+  
+  if (members.length === 0) {
+    memberListElement.innerHTML = `<p>当前${areaName}没有成员</p>`;
+    return;
+  }
+  
+  members.forEach(name => {
+    const memberItem = document.createElement('div');
+    memberItem.className = 'member-item';
+    memberItem.draggable = true;
+    memberItem.dataset.name = name;
+    memberItem.dataset.area = area;
+    
+    // 添加拖拽事件监听器
+    memberItem.addEventListener('dragstart', handleDragStart);
+    memberItem.addEventListener('dragover', handleDragOver);
+    memberItem.addEventListener('dragenter', handleDragEnter);
+    memberItem.addEventListener('dragleave', handleDragLeave);
+    memberItem.addEventListener('drop', handleDrop);
+    memberItem.addEventListener('dragend', handleDragEnd);
+    
+    const memberName = document.createElement('div');
+    memberName.className = 'member-name';
+    memberName.textContent = name;
+    
+    const memberActions = document.createElement('div');
+    memberActions.className = 'member-actions';
+    
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = '删除';
+    deleteButton.onclick = () => deleteMember(area, name);
+    
+    memberActions.appendChild(deleteButton);
+    memberItem.appendChild(memberName);
+    memberItem.appendChild(memberActions);
+    memberListElement.appendChild(memberItem);
+  });
+}
+
+// 拖拽相关变量
+let draggedItem = null;
+
+// 拖拽开始
+function handleDragStart(e) {
+  draggedItem = this;
+  this.classList.add('dragging');
+  
+  // 设置拖拽数据
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', this.dataset.name);
+}
+
+// 拖拽经过
+function handleDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+}
+
+// 拖拽进入
+function handleDragEnter(e) {
+  e.preventDefault();
+  this.classList.add('drag-over');
+}
+
+// 拖拽离开
+function handleDragLeave() {
+  this.classList.remove('drag-over');
+}
+
+// 放置
+function handleDrop(e) {
+  e.stopPropagation();
+  
+  if (draggedItem !== this) {
+    // 获取当前区域和成员列表
+    const area = this.dataset.area;
+    let members = [];
+    
+    switch(area) {
+      case 'publicArea':
+        members = publicArea;
+        break;
+      case 'southArea':
+        members = southArea;
+        break;
+      case 'northArea':
+        members = northArea;
+        break;
+    }
+    
+    // 获取拖拽项和目标项的索引
+    const draggedIndex = members.indexOf(draggedItem.dataset.name);
+    const targetIndex = members.indexOf(this.dataset.name);
+    
+    // 重新排序
+    if (draggedIndex !== -1 && targetIndex !== -1) {
+      // 移除拖拽项
+      members.splice(draggedIndex, 1);
+      
+      // 在目标位置插入拖拽项
+      members.splice(targetIndex, 0, draggedItem.dataset.name);
+      
+      // 保存更新后的顺序
+      saveData();
+      
+      // 重新显示列表
+      displayMembers();
+    }
+  }
+  
+  return false;
+}
+
+// 拖拽结束
+function handleDragEnd() {
+  this.classList.remove('dragging');
+  
+  // 移除所有元素的drag-over类
+  document.querySelectorAll('.drag-over').forEach(item => {
+    item.classList.remove('drag-over');
+  });
+}
+
+// 页面加载时显示成员列表
+window.onload = () => {
+  displayMembers();
+};
+</script>
+
+</body>
+</html>
