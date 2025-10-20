@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>值日轮值系统 - 成员管理</title>
 <style>
   /* 全局样式 */
@@ -24,6 +25,32 @@
     max-width: 800px;
     margin: auto;
     padding: 20px;
+  }
+  
+  /* 响应式样式 */
+  @media (max-width: 768px) {
+    .container {
+      width: 95%;
+      padding: 10px;
+    }
+    h1 {
+      padding: 20px 0 10px 0;
+      font-size: 1.8em;
+    }
+    .section {
+      padding: 15px;
+    }
+    .btn {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    input[type="text"] {
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .member-list {
+      overflow-x: auto;
+    }
   }
 
   /* 区域选择部分 */
@@ -215,6 +242,15 @@
 </div>
 
 <script>
+// 检查用户是否已登录
+(function checkLogin() {
+  const isLoggedIn = localStorage.getItem('isLoggedIn');
+  if (isLoggedIn !== 'true') {
+    // 未登录，重定向到登录页面
+    window.location.href = 'login.html';
+  }
+})();
+
 // 从localStorage获取区域数据，如果没有则使用默认值
 let publicArea = JSON.parse(localStorage.getItem('publicAreaMembers')) || ["镇","旭","大龙","原","磊","泽","深","淏","叶","飞","学治","勇","清","义志","枫","峰","星宇","茏","龚","军","帆","叶","林","前","哲","圣"];
 let southArea = JSON.parse(localStorage.getItem('southAreaMembers')) || ["叶","峰","浩","学治","深","清","义志","泽","龙","旭","飞","茏","龚","帆"];
