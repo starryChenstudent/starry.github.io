@@ -1,8 +1,15 @@
-// Firebase initialization and Firestore export
+// Firebase initialization and Firestore export (with persistent cache and jsDelivr CDN)
 // Note: this file is loaded via <script type="module"> in HTML pages
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-import { getFirestore, collection, doc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+import { initializeApp } from "https://cdn.jsdelivr.net/npm/firebase@10.12.3/app/dist/index.esm.js";
+import {
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+  CACHE_SIZE_UNLIMITED,
+  collection,
+  doc
+} from "https://cdn.jsdelivr.net/npm/firebase@10.12.3/firestore/dist/index.esm.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCD2Tlfy2UeCg_U7eS8o6j1Vbjsw66HGg4",
@@ -14,7 +21,10 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+  cacheSizeBytes: CACHE_SIZE_UNLIMITED
+});
 
 // common collection/doc helpers
 const col = (name) => collection(db, name);
