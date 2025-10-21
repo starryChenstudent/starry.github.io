@@ -228,7 +228,7 @@
 </div>
 
 <script type="module">
-import { db } from './firebase-config.js';
+import { db, ADMIN_USERNAME, ADMIN_PASSWORD } from './firebase-config.js';
 import { doc, getDoc, setDoc, addDoc, collection } from 'https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js';
 
 // 简单登录检查（沿用本地会话标记）
@@ -236,7 +236,9 @@ import { doc, getDoc, setDoc, addDoc, collection } from 'https://www.gstatic.com
   const isLoggedIn = sessionStorage.getItem('isLoggedIn');
   if (isLoggedIn !== 'true') {
     window.location.href = 'login.html';
+    return;
   }
+  // 二次校验（可选）：若未来需要用户名校验，可扩展
 })();
 
 const MEMBERS_DOC = doc(db, 'members', 'areas');
