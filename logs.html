@@ -326,20 +326,38 @@
   </div>
 </div>
 
-<script>
+<script type="module">
+import { db } from './firebase-config.js';
+import { collection, getDocs, query, orderBy, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js';
+
+// 简单登录校验：未登录则跳转到登录页
+if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+  window.location.href = 'login.html';
+}
+
+// 进入操作日志必须二次验证密码
+function requirePassword() {
+  const input = prompt('请输入访问操作日志的密码');
+  if (input === '17108') {
+    return true;
+  }
+  alert('密码错误，将返回主页');
+  window.location.href = 'index.html';
+  return false;
+}
 let currentFilter = 'all';
+const LOGS_COL = collection(db, 'operationLogs');
 
 function toggleTheme() {
   const html = document.documentElement;
   const currentTheme = html.getAttribute('data-theme');
   const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
   html.setAttribute('data-theme', newTheme);
-  localStorage.setItem('theme', newTheme);
   document.getElementById('themeIcon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
 }
 
 function loadTheme() {
-  const savedTheme = localStorage.getItem('theme') || 'light';
+  const savedTheme = 'light';
   document.documentElement.setAttribute('data-theme', savedTheme);
   document.getElementById('themeIcon').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
 }
@@ -356,8 +374,10 @@ function formatTime(isoString) {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
-function displayLogs() {
-  const logs = JSON.parse(localStorage.getItem('operationLogs') || '[]');
+async function displayLogs() {
+  const q = query(LOGS_COL, orderBy('timestamp', 'desc'));
+  const snap = await getDocs(q);
+  const logs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
   const container = document.getElementById('logsList');
   
   if (logs.length === 0) {
@@ -429,17 +449,25 @@ function updateStats(logs) {
   document.getElementById('weekLogs').textContent = weekLogs;
 }
 
-function clearLogs() {
-  if (confirm('确定要清空所有操作日志吗？此操作不可撤销！')) {
-    localStorage.removeItem('operationLogs');
-    displayLogs();
-  }
+async function clearLogs() {
+  if (!confirm('确定要清空所有操作日志吗？此操作不可撤销！')) return;
+  const q = query(LOGS_COL);
+  const snap = await getDocs(q);
+  await Promise.all(snap.docs.map(d => deleteDoc(d.ref)));
+  await displayLogs();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!requirePassword()) return;
   loadTheme();
-  displayLogs();
+  await displayLogs();
 });
+
+// 将需要由 HTML 调用的函数挂到全局，确保按钮可用
+window.setFilter = setFilter;
+window.filterLogs = filterLogs;
+window.clearLogs = clearLogs;
+window.toggleTheme = toggleTheme;
 </script>
 </body>
 </html>

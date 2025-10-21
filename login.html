@@ -157,7 +157,7 @@
   </div>
 </div>
 
-<script>
+<script type="module">
   function login() {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
@@ -166,8 +166,8 @@
     // 验证账号和密码
     // 验证账号和密码
     if (username === 'admin' && password === '17108') {
-      // 登录成功，设置登录状态并跳转到管理页面
-      localStorage.setItem('isLoggedIn', 'true');
+      // 使用 sessionStorage 标记登录状态
+      sessionStorage.setItem('isLoggedIn', 'true');
       window.location.href = 'manage.html';
     } else {
       // 登录失败，显示错误信息

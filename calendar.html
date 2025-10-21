@@ -296,20 +296,25 @@
   </div>
 </div>
 
-<script>
+<script type="module">
+import { db } from './firebase-config.js';
+import { collection, getDocs, query, orderBy, doc, getDoc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js';
+const HISTORY_COL = collection(db, 'dutyHistory');
+const SETTINGS_THEME_DOC = doc(db, 'settings', 'theme');
 let currentDate = new Date();
 
-function toggleTheme() {
+async function toggleTheme() {
   const html = document.documentElement;
   const currentTheme = html.getAttribute('data-theme');
   const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
   html.setAttribute('data-theme', newTheme);
-  localStorage.setItem('theme', newTheme);
+  await setDoc(SETTINGS_THEME_DOC, { value: newTheme }, { merge: true });
   document.getElementById('themeIcon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
 }
 
-function loadTheme() {
-  const savedTheme = localStorage.getItem('theme') || 'light';
+async function loadTheme() {
+  const snap = await getDoc(SETTINGS_THEME_DOC);
+  const savedTheme = snap.exists() ? (snap.data().value || 'light') : 'light';
   document.documentElement.setAttribute('data-theme', savedTheme);
   document.getElementById('themeIcon').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
 }
@@ -323,9 +328,17 @@ function getWeekNumber(date) {
   return `${d.getFullYear()}-W${weekNo}`;
 }
 
+let historyCache = [];
+function listenHistory() {
+  const qy = query(HISTORY_COL, orderBy('date', 'desc'));
+  onSnapshot(qy, (snapshot) => {
+    historyCache = snapshot.docs.map(d => d.data());
+    renderCalendar();
+  });
+}
+
 function getDutyForWeek(weekNum) {
-  const history = JSON.parse(localStorage.getItem('dutyHistory') || '[]');
-  return history.find(r => r.week === weekNum) || null;
+  return historyCache.find(r => r.week === weekNum) || null;
 }
 
 function isMonday(date) {
@@ -474,10 +487,16 @@ function goToToday() {
   renderCalendar();
 }
 
-window.onload = () => {
-  loadTheme();
+window.onload = async () => {
+  await loadTheme();
+  listenHistory();
   renderCalendar();
 };
+
+// 导出供 HTML 调用的函数
+window.toggleTheme = toggleTheme;
+window.changeMonth = changeMonth;
+window.goToToday = goToToday;
 </script>
 
 </body>

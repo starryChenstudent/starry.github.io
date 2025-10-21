@@ -259,24 +259,29 @@
   </div>
 </div>
 
-<script>
-function toggleTheme() {
+<script type="module">
+import { db } from './firebase-config.js';
+import { collection, getDocs, query, orderBy, deleteDoc, doc, getDoc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js';
+const HISTORY_COL = collection(db, 'dutyHistory');
+const SETTINGS_THEME_DOC = doc(db, 'settings', 'theme');
+async function toggleTheme() {
   const html = document.documentElement;
   const currentTheme = html.getAttribute('data-theme');
   const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
   html.setAttribute('data-theme', newTheme);
-  localStorage.setItem('theme', newTheme);
+  // persist theme
+  await setDoc(SETTINGS_THEME_DOC, { value: newTheme }, { merge: true });
   document.getElementById('themeIcon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
 }
 
-function loadTheme() {
-  const savedTheme = localStorage.getItem('theme') || 'light';
+async function loadTheme() {
+  const snap = await getDoc(SETTINGS_THEME_DOC);
+  const savedTheme = snap.exists() ? (snap.data().value || 'light') : 'light';
   document.documentElement.setAttribute('data-theme', savedTheme);
   document.getElementById('themeIcon').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
 }
 
-function displayHistory() {
-  const history = JSON.parse(localStorage.getItem('dutyHistory') || '[]');
+function renderHistoryList(history) {
   const container = document.getElementById('historyList');
   
   if (history.length === 0) {
@@ -292,10 +297,10 @@ function displayHistory() {
     
     const item = document.createElement('div');
     item.className = 'history-item';
-    item.setAttribute('data-id', `${record.week}-${record.date}`); // 添加唯一标识
+    item.setAttribute('data-id', record.id);
     item.innerHTML = `
       <div class="history-date">${record.week} - ${dateStr}
-        <button class="btn" style="background: #e74c3c; float: right; padding: 5px 10px; font-size: 0.8em;" onclick="deleteHistoryItem('${record.week}-${record.date}')">删除</button>
+        <button class="btn" style="background: #e74c3c; float: right; padding: 5px 10px; font-size: 0.8em;" onclick="deleteHistoryItem('${record.id}')">删除</button>
       </div>
       <div class="history-content">
         <div class="duty-info">公共区: ${record.public}</div>
@@ -308,8 +313,7 @@ function displayHistory() {
   });
 }
 
-function calculateStats() {
-  const history = JSON.parse(localStorage.getItem('dutyHistory') || '[]');
+function renderStats(history) {
   
   const publicCount = {};
   const southCount = {};
@@ -354,6 +358,17 @@ function calculateStats() {
   });
 }
 
+function listenHistory() {
+  const q = query(HISTORY_COL, orderBy('date', 'desc'));
+  onSnapshot(q, (snap) => {
+    const historyWithId = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderHistoryList(historyWithId);
+    renderStats(historyWithId.map(({ id, ...rest }) => rest));
+    // 保持筛选框逻辑仍可用
+    filterHistory();
+  });
+}
+
 function filterHistory() {
   const searchText = document.getElementById('searchBox').value.toLowerCase();
   const items = document.querySelectorAll('.history-item');
@@ -368,29 +383,32 @@ function filterHistory() {
   });
 }
 
-function clearAllHistory() {
-  if (confirm('确定要清空所有值日历史记录吗？此操作不可撤销！')) {
-    localStorage.removeItem('dutyHistory');
-    displayHistory();
-    calculateStats();
-  }
+async function clearAllHistory() {
+  if (!confirm('确定要清空所有值日历史记录吗？此操作不可撤销！')) return;
+  const q = query(HISTORY_COL);
+  const snap = await getDocs(q);
+  await Promise.all(snap.docs.map(d => deleteDoc(d.ref)));
+  await displayHistory();
+  await calculateStats();
 }
 
-function deleteHistoryItem(id) {
-  if (confirm('确定要删除这条历史记录吗？')) {
-    let history = JSON.parse(localStorage.getItem('dutyHistory') || '[]');
-    history = history.filter(record => `${record.week}-${record.date}` !== id);
-    localStorage.setItem('dutyHistory', JSON.stringify(history));
-    displayHistory();
-    calculateStats();
-  }
+async function deleteHistoryItem(id) {
+  if (!confirm('确定要删除这条历史记录吗？')) return;
+  await deleteDoc(doc(db, 'dutyHistory', id));
+  await displayHistory();
+  await calculateStats();
 }
 
-window.onload = () => {
-  loadTheme();
-  displayHistory();
-  calculateStats();
+window.onload = async () => {
+  await loadTheme();
+  listenHistory();
 };
+
+// 将需要由 HTML 直接调用的函数挂到全局
+window.toggleTheme = toggleTheme;
+window.clearAllHistory = clearAllHistory;
+window.deleteHistoryItem = deleteHistoryItem;
+window.filterHistory = filterHistory;
 </script>
 
 </body>
