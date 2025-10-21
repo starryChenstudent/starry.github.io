@@ -378,7 +378,7 @@ function getAreaMembers(areaKey, defaultList) {
 }
 
 const defaultPublicArea = ["镇","旭","大龙","原","磊","泽","深","淳","嶶","飞","学治","勇","清","义志","枫","峰","星宇","茗","龚","军","帆","嶶","林","剑","哲","圣"];
-const defaultSouthArea = ["嶶","峰","浩","学治","深","清","义志","泽","龙","旭","飞","茗","龚","帆"];
+const defaultSouthArea = ["叶","峰","浩","学治","深","清","义志","泽","龙","旭","飞","茗","龚","帆"];
 const defaultNorthArea = ["原","枫","磊","星宇","镇","军","剑","哲","圣","林","淳"];
 
 const publicArea = getAreaMembers("publicAreaMembers", defaultPublicArea);
@@ -487,7 +487,7 @@ function setEditLockState() {
 function unlockEdit() {
   const passwordInput = document.getElementById('editPassword');
   const unlockStatusSpan = document.getElementById('unlockStatus');
-  const correctPassword = 'password';
+  const correctPassword = '17108';
 
   if (passwordInput.value === correctPassword) {
     const selects = ['lastPublic','lastSouth','lastNorth'].map(id => document.getElementById(id));

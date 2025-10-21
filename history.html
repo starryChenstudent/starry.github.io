@@ -240,6 +240,7 @@
 <div class="container">
   <div style="text-align: center; margin-bottom: 20px;">
     <button onclick="window.location.href='index.html'" class="btn">返回主页</button>
+    <button onclick="clearAllHistory()" class="btn" style="background: #e74c3c;">清空所有记录</button>
   </div>
 
   <div class="section">
@@ -285,14 +286,17 @@ function displayHistory() {
   
   container.innerHTML = '';
   
-  history.forEach(record => {
+  history.forEach((record, index) => {
     const date = new Date(record.date);
     const dateStr = `${date.getFullYear()}年${date.getMonth()+1}月${date.getDate()}日`;
     
     const item = document.createElement('div');
     item.className = 'history-item';
+    item.setAttribute('data-id', `${record.week}-${record.date}`); // 添加唯一标识
     item.innerHTML = `
-      <div class="history-date">${record.week} - ${dateStr}</div>
+      <div class="history-date">${record.week} - ${dateStr}
+        <button class="btn" style="background: #e74c3c; float: right; padding: 5px 10px; font-size: 0.8em;" onclick="deleteHistoryItem('${record.week}-${record.date}')">删除</button>
+      </div>
       <div class="history-content">
         <div class="duty-info">公共区: ${record.public}</div>
         <div class="duty-info">南卧+中卧: ${record.south}</div>
@@ -362,6 +366,24 @@ function filterHistory() {
       item.style.display = 'none';
     }
   });
+}
+
+function clearAllHistory() {
+  if (confirm('确定要清空所有值日历史记录吗？此操作不可撤销！')) {
+    localStorage.removeItem('dutyHistory');
+    displayHistory();
+    calculateStats();
+  }
+}
+
+function deleteHistoryItem(id) {
+  if (confirm('确定要删除这条历史记录吗？')) {
+    let history = JSON.parse(localStorage.getItem('dutyHistory') || '[]');
+    history = history.filter(record => `${record.week}-${record.date}` !== id);
+    localStorage.setItem('dutyHistory', JSON.stringify(history));
+    displayHistory();
+    calculateStats();
+  }
 }
 
 window.onload = () => {
