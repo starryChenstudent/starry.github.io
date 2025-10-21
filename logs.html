@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>值日轮值系统 - 操作日志</title>
+<style>
+  :root {
+    --bg-gradient-start: #e0f0ff;
+    --bg-gradient-end: #f0f4f8;
+    --primary-color: #1e3d59;
+    --primary-hover: #3a5a77;
+    --text-color: #333;
+    --card-bg: #fff;
+    --shadow: rgba(0,0,0,0.08);
+    --border-color: #ccc;
+  }
+
+  [data-theme="dark"] {
+    --bg-gradient-start: #1a1a2e;
+    --bg-gradient-end: #16213e;
+    --primary-color: #4a90e2;
+    --primary-hover: #357abd;
+    --text-color: #e0e0e0;
+    --card-bg: #2d3748;
+    --shadow: rgba(0,0,0,0.3);
+    --border-color: #4a5568;
+  }
+
+  * {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  body {
+    font-family: "Microsoft YaHei", Arial, sans-serif;
+    background: linear-gradient(to bottom, var(--bg-gradient-start), var(--bg-gradient-end));
+    margin: 0;
+    padding: 0;
+    color: var(--text-color);
+    min-height: 100vh;
+  }
+
+  h1 {
+    text-align: center;
+    padding: 40px 0 20px 0;
+    color: var(--primary-color);
+    font-size: 2.2em;
+    margin: 0;
+    animation: fadeInDown 0.6s ease;
+  }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .container {
+    width: 90%;
+    max-width: 1000px;
+    margin: auto;
+    padding: 20px;
+    animation: fadeIn 0.6s ease;
+  }
+
+  .theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--card-bg);
+    border: 2px solid var(--primary-color);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+    z-index: 1000;
+    box-shadow: 0 4px 12px var(--shadow);
+    transition: all 0.3s ease;
+  }
+
+  .theme-toggle:hover {
+    transform: scale(1.1) rotate(15deg);
+  }
+
+  .section {
+    background: var(--card-bg);
+    padding: 25px 20px;
+    margin-bottom: 30px;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px var(--shadow);
+  }
+
+  .section h2 {
+    margin-top: 0;
+    color: var(--primary-color);
+    font-size: 1.5em;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 8px;
+  }
+
+  .btn {
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1em;
+    margin: 5px;
+    transition: all 0.3s ease;
+  }
+
+  .btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+  }
+
+  .btn-danger {
+    background: #dc3545;
+  }
+
+  .btn-danger:hover {
+    background: #c82333;
+  }
+
+  .log-item {
+    padding: 15px;
+    margin-bottom: 10px;
+    background: var(--card-bg);
+    border-left: 4px solid var(--primary-color);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px var(--shadow);
+    transition: all 0.3s ease;
+    animation: slideIn 0.3s ease;
+  }
+
+  .log-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px var(--shadow);
+  }
+
+  .log-time {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 5px;
+  }
+
+  [data-theme="dark"] .log-time {
+    color: #aaa;
+  }
+
+  .log-action {
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+  }
+
+  .log-details {
+    font-size: 0.95em;
+    color: var(--text-color);
+  }
+
+  .search-box {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 1em;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+    background: var(--card-bg);
+    color: var(--text-color);
+  }
+
+  .search-box:focus {
+    outline: none;
+    border-color: var(--primary-color);
+  }
+
+  .filter-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    padding: 8px 16px;
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-color);
+  }
+
+  .filter-btn:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+  }
+
+  .filter-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-color);
+    opacity: 0.6;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    padding: 20px;
+    border-radius: 12px;
+    color: white;
+    text-align: center;
+    box-shadow: 0 4px 12px var(--shadow);
+  }
+
+  .stat-number {
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .stat-label {
+    font-size: 0.9em;
+    opacity: 0.9;
+  }
+
+  @media (max-width: 768px) {
+    .container { width: 95%; padding: 10px; }
+    h1 { padding: 20px 0 10px 0; font-size: 1.8em; }
+    .section { padding: 15px; }
+    .filter-buttons { gap: 5px; }
+    .filter-btn { padding: 6px 12px; font-size: 0.9em; }
+  }
+</style>
+</head>
+<body>
+
+<div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+  <span id="themeIcon">🌙</span>
+</div>
+
+<h1>操作日志</h1>
+
+<div class="container">
+  <div style="text-align: center; margin-bottom: 20px;">
+    <button onclick="window.location.href='index.html'" class="btn">返回主页</button>
+    <button onclick="clearLogs()" class="btn btn-danger">清空日志</button>
+  </div>
+
+  <div class="section">
+    <h2>统计概览</h2>
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-number" id="totalLogs">0</div>
+        <div class="stat-label">总操作数</div>
+      </div>
+      <div class="stat-card" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+        <div class="stat-number" id="todayLogs">0</div>
+        <div class="stat-label">今日操作</div>
+      </div>
+      <div class="stat-card" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+        <div class="stat-number" id="weekLogs">0</div>
+        <div class="stat-label">本周操作</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>日志列表</h2>
+    
+    <input type="text" class="search-box" id="searchBox" placeholder="搜索操作内容..." onkeyup="filterLogs()">
+    
+    <div class="filter-buttons">
+      <button class="filter-btn active" onclick="setFilter('all')">全部</button>
+      <button class="filter-btn" onclick="setFilter('手动设置值日')">手动设置</button>
+      <button class="filter-btn" onclick="setFilter('自动轮换')">自动轮换</button>
+      <button class="filter-btn" onclick="setFilter('添加成员')">添加成员</button>
+      <button class="filter-btn" onclick="setFilter('删除成员')">删除成员</button>
+      <button class="filter-btn" onclick="setFilter('调整顺序')">调整顺序</button>
+    </div>
+    
+    <div id="logsList">
+      <!-- 日志列表将动态生成 -->
+    </div>
+  </div>
+</div>
+
+<script>
+let currentFilter = 'all';
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const currentTheme = html.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  document.getElementById('themeIcon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+}
+
+function loadTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  document.getElementById('themeIcon').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+}
+
+function formatTime(isoString) {
+  const date = new Date(isoString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
+function displayLogs() {
+  const logs = JSON.parse(localStorage.getItem('operationLogs') || '[]');
+  const container = document.getElementById('logsList');
+  
+  if (logs.length === 0) {
+    container.innerHTML = '<div class="empty-state">📋 暂无操作日志</div>';
+    return;
+  }
+  
+  container.innerHTML = '';
+
+  const searchInput = document.getElementById('searchBox').value.toLowerCase();
+  const filteredLogs = logs.filter(log => {
+    const matchesSearch = log.action.toLowerCase().includes(searchInput) || log.details.toLowerCase().includes(searchInput);
+    const matchesFilter = currentFilter === 'all' || log.action.includes(currentFilter);
+    return matchesSearch && matchesFilter;
+  });
+
+  if (filteredLogs.length === 0) {
+    container.innerHTML = '<div class="empty-state">📋 没有找到匹配的日志</div>';
+    return;
+  }
+
+  filteredLogs.forEach(log => {
+    const logItem = document.createElement('div');
+    logItem.className = 'log-item';
+    logItem.innerHTML = `
+      <div class="log-time">${formatTime(log.timestamp)}</div>
+      <div class="log-action">${log.action}</div>
+      <div class="log-details">${log.details}</div>
+    `;
+    container.appendChild(logItem);
+  });
+  updateStats(filteredLogs);
+}
+
+function filterLogs() {
+  displayLogs();
+}
+
+function setFilter(filterType) {
+  currentFilter = filterType;
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  document.querySelector(`.filter-btn[onclick="setFilter('${filterType}')"]`).classList.add('active');
+  displayLogs();
+}
+
+function updateStats(logs) {
+  document.getElementById('totalLogs').textContent = logs.length;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayLogs = logs.filter(log => {
+    const logDate = new Date(log.timestamp);
+    logDate.setHours(0, 0, 0, 0);
+    return logDate.getTime() === today.getTime();
+  }).length;
+  document.getElementById('todayLogs').textContent = todayLogs;
+
+  const startOfWeek = new Date(today);
+  startOfWeek.setDate(today.getDate() - today.getDay()); // Sunday as start of week
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  const weekLogs = logs.filter(log => {
+    const logDate = new Date(log.timestamp);
+    logDate.setHours(0, 0, 0, 0);
+    return logDate.getTime() >= startOfWeek.getTime();
+  }).length;
+  document.getElementById('weekLogs').textContent = weekLogs;
+}
+
+function clearLogs() {
+  if (confirm('确定要清空所有操作日志吗？此操作不可撤销！')) {
+    localStorage.removeItem('operationLogs');
+    displayLogs();
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadTheme();
+  displayLogs();
+});
+</script>
+</body>
+</html>

@@ -5,83 +5,264 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>值日轮值系统</title>
 <style>
-  /* 全局样式 */
+  :root {
+    --bg-gradient-start: #e0f0ff;
+    --bg-gradient-end: #f0f4f8;
+    --primary-color: #1e3d59;
+    --primary-hover: #3a5a77;
+    --text-color: #333;
+    --card-bg: #fff;
+    --shadow: rgba(0,0,0,0.08);
+    --border-color: #ccc;
+  }
+
+  [data-theme="dark"] {
+    --bg-gradient-start: #1a1a2e;
+    --bg-gradient-end: #16213e;
+    --primary-color: #4a90e2;
+    --primary-hover: #357abd;
+    --text-color: #e0e0e0;
+    --card-bg: #2d3748;
+    --shadow: rgba(0,0,0,0.3);
+    --border-color: #4a5568;
+  }
+
+  * {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
   body {
     font-family: "Microsoft YaHei", Arial, sans-serif;
-    background: linear-gradient(to bottom, #e0f0ff, #f0f4f8);
+    background: linear-gradient(to bottom, var(--bg-gradient-start), var(--bg-gradient-end));
     margin: 0;
     padding: 0;
-    color: #333;
+    color: var(--text-color);
+    min-height: 100vh;
   }
+
   h1 {
     text-align: center;
     padding: 40px 0 20px 0;
-    color: #1e3d59;
+    color: var(--primary-color);
     font-size: 2.2em;
     margin: 0;
+    animation: fadeInDown 0.6s ease;
   }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
   .container {
     width: 90%;
     max-width: 800px;
     margin: auto;
     padding: 20px;
+    animation: fadeIn 0.6s ease;
   }
 
-  /* 区域选择部分 */
+  .theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--card-bg);
+    border: 2px solid var(--primary-color);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+    z-index: 1000;
+    box-shadow: 0 4px 12px var(--shadow);
+    transition: all 0.3s ease;
+  }
+
+  .theme-toggle:hover {
+    transform: scale(1.1) rotate(15deg);
+  }
+
   .section {
-    background: #fff;
+    background: var(--card-bg);
     padding: 25px 20px;
     margin-bottom: 30px;
     border-radius: 14px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    box-shadow: 0 6px 18px var(--shadow);
+    animation: slideIn 0.6s ease;
   }
+
   .section h2 {
     margin-top: 0;
-    color: #1e3d59;
+    color: var(--primary-color);
     font-size: 1.5em;
-    border-bottom: 2px solid #1e3d59;
+    border-bottom: 2px solid var(--primary-color);
     padding-bottom: 8px;
   }
-  select {
+
+  select, input[type="password"] {
     padding: 10px 12px;
     font-size: 1em;
     border-radius: 8px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--border-color);
     margin-left: 10px;
+    background: var(--card-bg);
+    color: var(--text-color);
   }
+
   .btn {
-    background: #1e3d59;
+    background: var(--primary-color);
     color: #fff;
     border: none;
     padding: 12px 20px;
     border-radius: 10px;
     cursor: pointer;
     font-size: 1em;
-    margin-top: 15px;
+    margin: 5px;
     transition: all 0.3s ease;
   }
+
   .btn:hover {
-    background: #3a5a77;
+    background: var(--primary-hover);
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow);
   }
 
-  /* 本周值日生展示 */
   .this-week p {
     font-size: 1.4em;
-    margin: 25px 0;               /* 增加行间距 */
-    padding: 20px 18px;           /* 增加内边距 */
+    margin: 25px 0;
+    padding: 20px 18px;
     border-radius: 12px;
     background: linear-gradient(to right, #a1c4fd, #c2e9fb);
     color: #1e3d59;
     font-weight: bold;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);  /* 增加阴影 */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     transition: transform 0.2s ease;
-  }
-  .this-week p:hover {
-    transform: translateY(-3px);
+    animation: fadeIn 0.8s ease;
   }
 
-  /* 响应式 */
+  .this-week p:hover {
+    transform: translateY(-3px) scale(1.02);
+  }
+
+  .auto-rotation-notice {
+    background: #d4edda;
+    color: #155724;
+    padding: 12px 18px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid #28a745;
+    display: none;
+    animation: slideIn 0.5s ease;
+  }
+
+  .nav-links {
+    text-align: center;
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  #current-time {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: var(--text-color);
+  }
+
+  .hamburger {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: var(--card-bg);
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    z-index: 1001;
+    box-shadow: 0 4px 12px var(--shadow);
+  }
+
+  .hamburger span {
+    width: 25px;
+    height: 3px;
+    background: var(--primary-color);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+
+  .mobile-menu {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 80%;
+    max-width: 300px;
+    height: 100vh;
+    background: var(--card-bg);
+    box-shadow: 4px 0 12px var(--shadow);
+    z-index: 1000;
+    padding: 80px 20px 20px;
+    transition: left 0.3s ease;
+    overflow-y: auto;
+  }
+
+  .mobile-menu.active {
+    left: 0;
+  }
+
+  .mobile-menu .btn {
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+    display: none;
+  }
+
+  .overlay.active {
+    display: block;
+  }
+
   @media (max-width: 768px) {
     .this-week p { font-size: 1.2em; padding: 16px; margin: 20px 0; }
     select { margin-left: 0; width: 100%; margin-top: 5px; }
@@ -90,72 +271,120 @@
     .container { width: 95%; padding: 10px; }
     h1 { padding: 20px 0 10px 0; font-size: 1.8em; }
     .section { padding: 15px; }
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .theme-toggle { top: 80px; right: 10px; width: 45px; height: 45px; }
   }
-
 </style>
 </head>
 <body>
 
+<div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+  <span id="themeIcon">🌙</span>
+</div>
+
+<div class="hamburger" onclick="toggleMenu()">
+  <span></span>
+  <span></span>
+  <span></span>
+</div>
+
+<div class="overlay" onclick="toggleMenu()"></div>
+
+<div class="mobile-menu">
+  <button onclick="window.location.href='login.html'" class="btn">成员管理</button>
+  <button onclick="window.location.href='history.html'" class="btn">历史记录</button>
+  <button onclick="window.location.href='calendar.html'" class="btn">日历视图</button>
+  <button onclick="window.location.href='logs.html'" class="btn">操作日志</button>
+</div>
+
 <h1>值日轮值系统</h1>
 
-<div class="nav-links" style="text-align: center; margin-bottom: 20px;">
-  <button onclick="window.location.href='login.html'" class="btn" style="background: #1e3d59; color: #fff; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-size: 1em; transition: all 0.3s ease;">成员管理</button>
+<div id="current-time"></div>
+
+<div class="nav-links">
+  <button onclick="window.location.href='login.html'" class="btn">成员管理</button>
+  <button onclick="window.location.href='history.html'" class="btn">历史记录</button>
+  <button onclick="window.location.href='calendar.html'" class="btn">日历视图</button>
+  <button onclick="window.location.href='logs.html'" class="btn">操作日志</button>
 </div>
 
 <div class="container">
 
+  <div id="autoRotationNotice" class="auto-rotation-notice">
+    ✅ 系统已自动轮换到本周值日生
+  </div>
+
   <div class="section this-week">
     <h2>本周值日生</h2>
-    <p>公共区：<span id="thisPublic">-</span></p>
-    <p>南卧+中卧：<span id="thisSouth">-</span></p>
-    <p>北卧+厅卧：<span id="thisNorth">-</span></p>
+    <p>公共区:<span id="thisPublic">-</span></p>
+    <p>南卧+中卧:<span id="thisSouth">-</span></p>
+    <p>北卧+厅卧:<span id="thisNorth">-</span></p>
   </div>
 
   <div class="section">
     <h2>选择上周值日生</h2>
     <div id="editLock" style="margin-bottom: 15px; display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
-      <input type="password" id="editPassword" placeholder="请输入密码以解锁" style="flex-grow: 1; padding: 10px 12px; font-size: 1em; border-radius: 8px; border: 1px solid #ccc; min-width: 150px;">
-      <button class="btn" onclick="unlockEdit()" style="background: #007bff; color: #fff; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-size: 1em; transition: background-color 0.3s ease;">解锁</button>
+      <input type="password" id="editPassword" placeholder="请输入密码以解锁" style="flex-grow: 1; padding: 10px 12px; font-size: 1em; border-radius: 8px; border: 1px solid var(--border-color); min-width: 150px; background: var(--card-bg); color: var(--text-color);">
+      <button class="btn" onclick="unlockEdit()">解锁</button>
       <span id="unlockStatus" style="margin-left: 10px; font-weight: bold; display: none;"></span>
     </div>
     <div style="margin-bottom: 10px;">
-      <label style="display: flex; align-items: center; gap: 10px; font-weight: bold;">公共区：
-        <select id="lastPublic" disabled style="flex-grow: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em;"></select>
+      <label style="display: flex; align-items: center; gap: 10px; font-weight: bold;">公共区:
+        <select id="lastPublic" disabled style="flex-grow: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 1em; background: var(--card-bg); color: var(--text-color);"></select>
       </label>
     </div>
     <div style="margin-bottom: 10px;">
-      <label style="display: flex; align-items: center; gap: 10px; font-weight: bold;">南卧+中卧：
-        <select id="lastSouth" disabled style="flex-grow: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em;"></select>
+      <label style="display: flex; align-items: center; gap: 10px; font-weight: bold;">南卧+中卧:
+        <select id="lastSouth" disabled style="flex-grow: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 1em; background: var(--card-bg); color: var(--text-color);"></select>
       </label>
     </div>
     <div style="margin-bottom: 15px;">
-      <label style="display: flex; align-items: center; gap: 10px; font-weight: bold;">北卧+厅卧：
-        <select id="lastNorth" disabled style="flex-grow: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em;"></select>
+      <label style="display: flex; align-items: center; gap: 10px; font-weight: bold;">北卧+厅卧:
+        <select id="lastNorth" disabled style="flex-grow: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 1em; background: var(--card-bg); color: var(--text-color);"></select>
       </label>
     </div>
-    <button id="confirmBtn" class="btn" onclick="calculateThisWeek()" disabled style="background: #28a745; color: #fff; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 1em; transition: background-color 0.3s ease;">确定本周值日</button>
+    <button id="confirmBtn" class="btn" onclick="manualCalculateThisWeek()" disabled style="background: #28a745;">确定本周值日</button>
   </div>
 
 </div>
 
 <script>
-// 从localStorage获取区域顺序数据
+function toggleMenu() {
+  const menu = document.querySelector('.mobile-menu');
+  const overlay = document.querySelector('.overlay');
+  menu.classList.toggle('active');
+  overlay.classList.toggle('active');
+}
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const currentTheme = html.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  document.getElementById('themeIcon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+}
+
+function loadTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  document.getElementById('themeIcon').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+}
+
 function getAreaMembers(areaKey, defaultList) {
   const savedData = localStorage.getItem(areaKey);
   return savedData ? JSON.parse(savedData) : defaultList;
 }
 
-// 默认区域顺序数据
-const defaultPublicArea = ["镇","旭","大龙","原","磊","泽","深","淏","叶","飞","学治","勇","清","义志","枫","峰","星宇","茏","龚","军","帆","叶","林","前","哲","圣"];
-const defaultSouthArea = ["叶","峰","浩","学治","深","清","义志","泽","龙","旭","飞","茏","龚","帆"];
-const defaultNorthArea = ["原","枫","磊","星宇","镇","军","前","哲","圣","林","淏"];
+const defaultPublicArea = ["镇","旭","大龙","原","磊","泽","深","淳","嶶","飞","学治","勇","清","义志","枫","峰","星宇","茗","龚","军","帆","嶶","林","剑","哲","圣"];
+const defaultSouthArea = ["嶶","峰","浩","学治","深","清","义志","泽","龙","旭","飞","茗","龚","帆"];
+const defaultNorthArea = ["原","枫","磊","星宇","镇","军","剑","哲","圣","林","淳"];
 
-// 获取当前区域成员列表
 const publicArea = getAreaMembers("publicAreaMembers", defaultPublicArea);
 const southArea = getAreaMembers("southAreaMembers", defaultSouthArea);
 const northArea = getAreaMembers("northAreaMembers", defaultNorthArea);
 
-// 填充下拉框
 function fillDropdown(id, list) {
   const sel = document.getElementById(id);
   sel.innerHTML = "";
@@ -171,30 +400,76 @@ fillDropdown("lastPublic", publicArea);
 fillDropdown("lastSouth", southArea);
 fillDropdown("lastNorth", northArea);
 
-// 计算本周值日
-function calculateThisWeek() {
+function getWeekNumber(date) {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+  return `${d.getUTCFullYear()}-W${weekNo}`;
+}
+
+function saveToHistory(publicName, southName, northName) {
+  const history = JSON.parse(localStorage.getItem('dutyHistory') || '[]');
+  const today = new Date();
+  const weekNum = getWeekNumber(today);
+  
+  history.unshift({
+    date: today.toISOString(),
+    week: weekNum,
+    public: publicName,
+    south: southName,
+    north: northName
+  });
+  
+  if (history.length > 100) history.pop();
+  
+  localStorage.setItem('dutyHistory', JSON.stringify(history));
+}
+
+function addLog(action, details) {
+  const logs = JSON.parse(localStorage.getItem('operationLogs') || '[]');
+  logs.unshift({
+    timestamp: new Date().toISOString(),
+    action: action,
+    details: details
+  });
+  
+  if (logs.length > 200) logs.pop();
+  
+  localStorage.setItem('operationLogs', JSON.stringify(logs));
+}
+
+function manualCalculateThisWeek() {
   const lastPublic = document.getElementById("lastPublic").value;
   const lastSouth = document.getElementById("lastSouth").value;
   const lastNorth = document.getElementById("lastNorth").value;
 
-  document.getElementById("thisPublic").textContent = nextPerson(publicArea, lastPublic);
-  document.getElementById("thisSouth").textContent = nextPerson(southArea, lastSouth);
-  document.getElementById("thisNorth").textContent = nextPerson(northArea, lastNorth);
+  const thisPublic = nextPerson(publicArea, lastPublic);
+  const thisSouth = nextPerson(southArea, lastSouth);
+  const thisNorth = nextPerson(northArea, lastNorth);
 
-  // 保存选择到 localStorage
+  document.getElementById("thisPublic").textContent = thisPublic;
+  document.getElementById("thisSouth").textContent = thisSouth;
+  document.getElementById("thisNorth").textContent = thisNorth;
+
   localStorage.setItem("lastPublic", lastPublic);
   localStorage.setItem("lastSouth", lastSouth);
   localStorage.setItem("lastNorth", lastNorth);
+
+  const today = new Date();
+  localStorage.setItem('lastRotationWeek', getWeekNumber(today));
+  
+  saveToHistory(thisPublic, thisSouth, thisNorth);
+  addLog('手动设置值日', `公共区:${thisPublic}, 南卧+中卧:${thisSouth}, 北卧+厅卧:${thisNorth}`);
 }
 
-// 下一个值日生计算函数
 function nextPerson(list, lastName) {
   const idx = list.indexOf(lastName);
   if (idx === -1 || idx === list.length-1) return list[0];
   return list[idx+1];
 }
 
-// 页面加载时，如果有 localStorage 保存，自动填充下拉框
 function setEditLockState() {
   const selects = ['lastPublic','lastSouth','lastNorth'].map(id => document.getElementById(id));
   const confirmBtn = document.getElementById('confirmBtn');
@@ -203,7 +478,7 @@ function setEditLockState() {
 
   selects.forEach(s => s.disabled = true);
   confirmBtn.disabled = true;
-  editLockDiv.style.display = 'block';
+  editLockDiv.style.display = 'flex';
   unlockStatusSpan.textContent = '未解锁';
   unlockStatusSpan.style.color = 'orange';
   unlockStatusSpan.style.display = 'inline';
@@ -212,7 +487,7 @@ function setEditLockState() {
 function unlockEdit() {
   const passwordInput = document.getElementById('editPassword');
   const unlockStatusSpan = document.getElementById('unlockStatus');
-  const correctPassword = '17108';
+  const correctPassword = 'password';
 
   if (passwordInput.value === correctPassword) {
     const selects = ['lastPublic','lastSouth','lastNorth'].map(id => document.getElementById(id));
@@ -222,23 +497,87 @@ function unlockEdit() {
     selects.forEach(s => s.disabled = false);
     confirmBtn.disabled = false;
     editLockDiv.style.display = 'none';
-    unlockStatusSpan.textContent = '解锁成功！';
+    unlockStatusSpan.textContent = '解锁成功!';
     unlockStatusSpan.style.color = 'green';
     unlockStatusSpan.style.display = 'inline';
-    passwordInput.value = ''; // Clear password input
+    passwordInput.value = '';
   } else {
-    unlockStatusSpan.textContent = '密码错误！';
+    unlockStatusSpan.textContent = '密码错误!';
     unlockStatusSpan.style.color = 'red';
     unlockStatusSpan.style.display = 'inline';
   }
 }
 
+function updateTime() {
+  const timeElement = document.getElementById('current-time');
+  if (!timeElement) return;
+  const now = new Date();
+  const timeStr = 
+    `${now.getFullYear()}年${String(now.getMonth()+1).padStart(2,'0')}月${String(now.getDate()).padStart(2,'0')}日 ` +
+    `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+  timeElement.textContent = timeStr;
+}
+
+function displayCurrentDuty() {
+  const lastPublic = localStorage.getItem("lastPublic") || publicArea[publicArea.length - 1];
+  const lastSouth = localStorage.getItem("lastSouth") || southArea[southArea.length - 1];
+  const lastNorth = localStorage.getItem("lastNorth") || northArea[northArea.length - 1];
+
+  document.getElementById("thisPublic").textContent = nextPerson(publicArea, lastPublic);
+  document.getElementById("thisSouth").textContent = nextPerson(southArea, lastSouth);
+  document.getElementById("thisNorth").textContent = nextPerson(northArea, lastNorth);
+}
+
+function checkAndAutoRotate() {
+  const today = new Date();
+  const currentWeek = getWeekNumber(today);
+  const lastRotationWeek = localStorage.getItem('lastRotationWeek');
+
+  if (!lastRotationWeek || lastRotationWeek !== currentWeek) {
+    const lastPublic = localStorage.getItem("lastPublic") || publicArea[publicArea.length - 1];
+    const lastSouth = localStorage.getItem("lastSouth") || southArea[southArea.length - 1];
+    const lastNorth = localStorage.getItem("lastNorth") || northArea[northArea.length - 1];
+
+    const thisPublic = nextPerson(publicArea, lastPublic);
+    const thisSouth = nextPerson(southArea, lastSouth);
+    const thisNorth = nextPerson(northArea, lastNorth);
+
+    localStorage.setItem("lastPublic", thisPublic);
+    localStorage.setItem("lastSouth", thisSouth);
+    localStorage.setItem("lastNorth", thisNorth);
+    localStorage.setItem('lastRotationWeek', currentWeek);
+
+    document.getElementById("lastPublic").value = thisPublic;
+    document.getElementById("lastSouth").value = thisSouth;
+    document.getElementById("lastNorth").value = thisNorth;
+
+    displayCurrentDuty();
+    
+    saveToHistory(thisPublic, thisSouth, thisNorth);
+    addLog('自动轮换', `新的一周自动轮换值日生`);
+    
+    const notice = document.getElementById('autoRotationNotice');
+    if (notice) {
+      notice.style.display = 'block';
+      setTimeout(() => {
+        notice.style.display = 'none';
+      }, 5000);
+    }
+  } else {
+    displayCurrentDuty();
+  }
+}
+
 window.onload = () => {
+  loadTheme();
   if(localStorage.getItem("lastPublic")) document.getElementById("lastPublic").value = localStorage.getItem("lastPublic");
   if(localStorage.getItem("lastSouth")) document.getElementById("lastSouth").value = localStorage.getItem("lastSouth");
   if(localStorage.getItem("lastNorth")) document.getElementById("lastNorth").value = localStorage.getItem("lastNorth");
+  
   setEditLockState();
-  calculateThisWeek();
+  checkAndAutoRotate();
+  updateTime();
+  setInterval(updateTime, 1000);
 }
 </script>
 

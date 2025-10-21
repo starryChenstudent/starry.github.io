@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>值日轮值系统 - 日历视图</title>
+<style>
+  :root {
+    --bg-gradient-start: #e0f0ff;
+    --bg-gradient-end: #f0f4f8;
+    --primary-color: #1e3d59;
+    --primary-hover: #3a5a77;
+    --text-color: #333;
+    --card-bg: #fff;
+    --shadow: rgba(0,0,0,0.08);
+    --border-color: #ccc;
+  }
+
+  [data-theme="dark"] {
+    --bg-gradient-start: #1a1a2e;
+    --bg-gradient-end: #16213e;
+    --primary-color: #4a90e2;
+    --primary-hover: #357abd;
+    --text-color: #e0e0e0;
+    --card-bg: #2d3748;
+    --shadow: rgba(0,0,0,0.3);
+    --border-color: #4a5568;
+  }
+
+  * {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  body {
+    font-family: "Microsoft YaHei", Arial, sans-serif;
+    background: linear-gradient(to bottom, var(--bg-gradient-start), var(--bg-gradient-end));
+    margin: 0;
+    padding: 0;
+    color: var(--text-color);
+    min-height: 100vh;
+  }
+
+  h1 {
+    text-align: center;
+    padding: 40px 0 20px 0;
+    color: var(--primary-color);
+    font-size: 2.2em;
+    margin: 0;
+    animation: fadeInDown 0.6s ease;
+  }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .container {
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+    animation: fadeIn 0.6s ease;
+  }
+
+  .theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--card-bg);
+    border: 2px solid var(--primary-color);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+    z-index: 1000;
+    box-shadow: 0 4px 12px var(--shadow);
+    transition: all 0.3s ease;
+  }
+
+  .theme-toggle:hover {
+    transform: scale(1.1) rotate(15deg);
+  }
+
+  .section {
+    background: var(--card-bg);
+    padding: 25px 20px;
+    margin-bottom: 30px;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px var(--shadow);
+  }
+
+  .btn {
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1em;
+    margin: 5px;
+    transition: all 0.3s ease;
+  }
+
+  .btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+  }
+
+  .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .calendar-title {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: var(--primary-color);
+  }
+
+  .calendar-nav {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .calendar-wrapper {
+    overflow-x: auto;
+  }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+    min-width: 700px;
+  }
+
+  .calendar-day-header {
+    text-align: center;
+    font-weight: bold;
+    padding: 10px;
+    color: var(--primary-color);
+    background: var(--card-bg);
+    border-radius: 8px;
+  }
+
+  .calendar-day {
+    min-height: 100px;
+    padding: 10px;
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .calendar-day:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px var(--shadow);
+  }
+
+  .calendar-day.other-month {
+    opacity: 0.3;
+  }
+
+  .calendar-day.today {
+    border-color: var(--primary-color);
+    background: linear-gradient(135deg, #667eea22, #764ba222);
+  }
+
+  .calendar-day.has-duty {
+    border-color: #28a745;
+  }
+
+  .day-number {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: var(--text-color);
+  }
+
+  .day-duty {
+    font-size: 0.75em;
+    padding: 3px 6px;
+    margin: 3px 0;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border-radius: 6px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .week-view {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+  }
+
+  .week-card {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    padding: 15px;
+    border-radius: 12px;
+    color: white;
+    box-shadow: 0 4px 12px var(--shadow);
+    transition: all 0.3s ease;
+  }
+
+  .week-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .week-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+  }
+
+  .week-info {
+    font-size: 0.9em;
+    line-height: 1.8;
+  }
+
+  @media (max-width: 768px) {
+    .container { width: 95%; padding: 10px; }
+    h1 { padding: 20px 0 10px 0; font-size: 1.8em; }
+    .section { padding: 15px; }
+    .calendar-grid { gap: 5px; min-width: 600px; }
+    .calendar-day { min-height: 80px; padding: 5px; font-size: 0.85em; }
+    .calendar-title { font-size: 1.3em; }
+    .day-duty { font-size: 0.65em; padding: 2px 4px; }
+    .calendar-nav .btn { padding: 8px 12px; font-size: 0.9em; }
+  }
+</style>
+</head>
+<body>
+
+<div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+  <span id="themeIcon">🌙</span>
+</div>
+
+<h1>日历视图</h1>
+
+<div class="container">
+  <div style="text-align: center; margin-bottom: 20px;">
+    <button onclick="window.location.href='index.html'" class="btn">返回主页</button>
+  </div>
+
+  <div class="section">
+    <div class="calendar-header">
+      <div class="calendar-title" id="calendarTitle"></div>
+      <div class="calendar-nav">
+        <button class="btn" onclick="changeMonth(-1)">◀ 上月</button>
+        <button class="btn" onclick="goToToday()">今天</button>
+        <button class="btn" onclick="changeMonth(1)">下月 ▶</button>
+      </div>
+    </div>
+
+    <div class="calendar-wrapper">
+      <div class="calendar-grid">
+        <div class="calendar-day-header">日</div>
+        <div class="calendar-day-header">一</div>
+        <div class="calendar-day-header">二</div>
+        <div class="calendar-day-header">三</div>
+        <div class="calendar-day-header">四</div>
+        <div class="calendar-day-header">五</div>
+        <div class="calendar-day-header">六</div>
+      </div>
+      <div class="calendar-grid" id="calendarDays" style="grid-template-columns: repeat(7, 1fr);"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 style="color: var(--primary-color); border-bottom: 2px solid var(--primary-color); padding-bottom: 8px;">本月值日安排</h2>
+    <div class="week-view" id="weekView"></div>
+  </div>
+</div>
+
+<script>
+let currentDate = new Date();
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const currentTheme = html.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  document.getElementById('themeIcon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+}
+
+function loadTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  document.getElementById('themeIcon').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+}
+
+function getWeekNumber(date) {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7);
+  const yearStart = new Date(d.getFullYear(), 0, 1);
+  const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+  return `${d.getFullYear()}-W${weekNo}`;
+}
+
+function getDutyForWeek(weekNum) {
+  const history = JSON.parse(localStorage.getItem('dutyHistory') || '[]');
+  return history.find(r => r.week === weekNum) || null;
+}
+
+function isMonday(date) {
+  return date.getDay() === 1;
+}
+
+function renderCalendar() {
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+  
+  document.getElementById('calendarTitle').textContent = `${year}年${month + 1}月`;
+  
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const prevLastDay = new Date(year, month, 0);
+  
+  const firstDayWeek = firstDay.getDay();
+  const lastDate = lastDay.getDate();
+  const prevLastDate = prevLastDay.getDate();
+  
+  const container = document.getElementById('calendarDays');
+  container.innerHTML = '';
+  
+  for (let i = firstDayWeek - 1; i >= 0; i--) {
+    const day = prevLastDate - i;
+    const date = new Date(year, month - 1, day);
+    container.appendChild(createDayElement(day, date, true));
+  }
+  
+  for (let i = 1; i <= lastDate; i++) {
+    const date = new Date(year, month, i);
+    container.appendChild(createDayElement(i, date, false));
+  }
+  
+  const totalCells = container.children.length;
+  const remainingCells = 42 - totalCells;
+  for (let i = 1; i <= remainingCells; i++) {
+    const date = new Date(year, month + 1, i);
+    container.appendChild(createDayElement(i, date, true));
+  }
+  
+  renderWeekView();
+}
+
+function createDayElement(day, date, isOtherMonth) {
+  const div = document.createElement('div');
+  div.className = 'calendar-day';
+  
+  if (isOtherMonth) {
+    div.classList.add('other-month');
+  }
+  
+  const today = new Date();
+  if (date.toDateString() === today.toDateString()) {
+    div.classList.add('today');
+  }
+  
+  const dayNumber = document.createElement('div');
+  dayNumber.className = 'day-number';
+  dayNumber.textContent = day;
+  div.appendChild(dayNumber);
+  
+  if (isMonday(date)) {
+    const weekNum = getWeekNumber(date);
+    const duty = getDutyForWeek(weekNum);
+    
+    if (duty) {
+      div.classList.add('has-duty');
+      
+      const dutyElements = [
+        { label: '公', value: duty.public },
+        { label: '南', value: duty.south },
+        { label: '北', value: duty.north }
+      ];
+      
+      dutyElements.forEach(item => {
+        const dutyDiv = document.createElement('div');
+        dutyDiv.className = 'day-duty';
+        dutyDiv.textContent = `${item.label}:${item.value}`;
+        dutyDiv.title = `${item.label === '公' ? '公共区' : item.label === '南' ? '南卧+中卧' : '北卧+厅卧'}: ${item.value}`;
+        div.appendChild(dutyDiv);
+      });
+    }
+  }
+  
+  return div;
+}
+
+function renderWeekView() {
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  
+  const container = document.getElementById('weekView');
+  container.innerHTML = '';
+  
+  const weeks = new Set();
+  for (let d = new Date(firstDay); d <= lastDay; d.setDate(d.getDate() + 1)) {
+    const weekNum = getWeekNumber(d);
+    weeks.add(weekNum);
+  }
+  
+  if (weeks.size === 0) {
+    let d = new Date(firstDay);
+    while (d.getDay() !== 1 && d > new Date(year, month - 1, 1)) {
+      d.setDate(d.getDate() - 1);
+    }
+    if (d.getDay() === 1) {
+      weeks.add(getWeekNumber(d));
+    }
+  }
+  
+  const sortedWeeks = Array.from(weeks).sort();
+  
+  sortedWeeks.forEach(weekNum => {
+    const duty = getDutyForWeek(weekNum);
+    
+    if (duty) {
+      const card = document.createElement('div');
+      card.className = 'week-card';
+      card.innerHTML = `
+        <div class="week-title">${weekNum}</div>
+        <div class="week-info">
+          <div>📍 公共区: ${duty.public}</div>
+          <div>📍 南卧+中卧: ${duty.south}</div>
+          <div>📍 北卧+厅卧: ${duty.north}</div>
+        </div>
+      `;
+      container.appendChild(card);
+    }
+  });
+  
+  if (container.children.length === 0) {
+    container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-color);">本月暂无值日记录</div>';
+  }
+}
+
+function changeMonth(delta) {
+  currentDate.setMonth(currentDate.getMonth() + delta);
+  renderCalendar();
+}
+
+function goToToday() {
+  currentDate = new Date();
+  renderCalendar();
+}
+
+window.onload = () => {
+  loadTheme();
+  renderCalendar();
+};
+</script>
+
+</body>
+</html>

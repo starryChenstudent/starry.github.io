@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>值日轮值系统 - 历史记录</title>
+<style>
+  :root {
+    --bg-gradient-start: #e0f0ff;
+    --bg-gradient-end: #f0f4f8;
+    --primary-color: #1e3d59;
+    --primary-hover: #3a5a77;
+    --text-color: #333;
+    --card-bg: #fff;
+    --shadow: rgba(0,0,0,0.08);
+    --border-color: #ccc;
+  }
+
+  [data-theme="dark"] {
+    --bg-gradient-start: #1a1a2e;
+    --bg-gradient-end: #16213e;
+    --primary-color: #4a90e2;
+    --primary-hover: #357abd;
+    --text-color: #e0e0e0;
+    --card-bg: #2d3748;
+    --shadow: rgba(0,0,0,0.3);
+    --border-color: #4a5568;
+  }
+
+  * {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  body {
+    font-family: "Microsoft YaHei", Arial, sans-serif;
+    background: linear-gradient(to bottom, var(--bg-gradient-start), var(--bg-gradient-end));
+    margin: 0;
+    padding: 0;
+    color: var(--text-color);
+    min-height: 100vh;
+  }
+
+  h1 {
+    text-align: center;
+    padding: 40px 0 20px 0;
+    color: var(--primary-color);
+    font-size: 2.2em;
+    margin: 0;
+    animation: fadeInDown 0.6s ease;
+  }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .container {
+    width: 90%;
+    max-width: 1000px;
+    margin: auto;
+    padding: 20px;
+    animation: fadeIn 0.6s ease;
+  }
+
+  .theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--card-bg);
+    border: 2px solid var(--primary-color);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+    z-index: 1000;
+    box-shadow: 0 4px 12px var(--shadow);
+    transition: all 0.3s ease;
+  }
+
+  .theme-toggle:hover {
+    transform: scale(1.1) rotate(15deg);
+  }
+
+  .section {
+    background: var(--card-bg);
+    padding: 25px 20px;
+    margin-bottom: 30px;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px var(--shadow);
+  }
+
+  .section h2 {
+    margin-top: 0;
+    color: var(--primary-color);
+    font-size: 1.5em;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 8px;
+  }
+
+  .btn {
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1em;
+    margin: 5px;
+    transition: all 0.3s ease;
+  }
+
+  .btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+  }
+
+  .history-item {
+    padding: 15px;
+    margin-bottom: 15px;
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+  }
+
+  .history-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px var(--shadow);
+  }
+
+  .history-date {
+    font-weight: bold;
+    color: var(--primary-color);
+    font-size: 1.1em;
+    margin-bottom: 8px;
+  }
+
+  .history-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .duty-info {
+    padding: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px;
+    font-size: 0.95em;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+  }
+
+  .stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+    border-radius: 12px;
+    color: white;
+    box-shadow: 0 4px 12px var(--shadow);
+    transition: all 0.3s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .stat-title {
+    font-size: 1.1em;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+
+  .stat-list {
+    font-size: 0.95em;
+    line-height: 1.8;
+  }
+
+  .search-box {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 1em;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+    background: var(--card-bg);
+    color: var(--text-color);
+  }
+
+  .search-box:focus {
+    outline: none;
+    border-color: var(--primary-color);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-color);
+    opacity: 0.6;
+  }
+
+  @media (max-width: 768px) {
+    .container { width: 95%; padding: 10px; }
+    h1 { padding: 20px 0 10px 0; font-size: 1.8em; }
+    .section { padding: 15px; }
+    .history-content { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+  <span id="themeIcon">🌙</span>
+</div>
+
+<h1>历史记录</h1>
+
+<div class="container">
+  <div style="text-align: center; margin-bottom: 20px;">
+    <button onclick="window.location.href='index.html'" class="btn">返回主页</button>
+  </div>
+
+  <div class="section">
+    <h2>统计信息</h2>
+    <div class="stats-grid" id="statsContainer">
+      <!-- 统计信息将动态生成 -->
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>值日记录</h2>
+    <input type="text" class="search-box" id="searchBox" placeholder="搜索姓名或日期..." onkeyup="filterHistory()">
+    <div id="historyList">
+      <!-- 历史记录将动态生成 -->
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const currentTheme = html.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  document.getElementById('themeIcon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+}
+
+function loadTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  document.getElementById('themeIcon').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+}
+
+function displayHistory() {
+  const history = JSON.parse(localStorage.getItem('dutyHistory') || '[]');
+  const container = document.getElementById('historyList');
+  
+  if (history.length === 0) {
+    container.innerHTML = '<div class="empty-state">📋 暂无历史记录</div>';
+    return;
+  }
+  
+  container.innerHTML = '';
+  
+  history.forEach(record => {
+    const date = new Date(record.date);
+    const dateStr = `${date.getFullYear()}年${date.getMonth()+1}月${date.getDate()}日`;
+    
+    const item = document.createElement('div');
+    item.className = 'history-item';
+    item.innerHTML = `
+      <div class="history-date">${record.week} - ${dateStr}</div>
+      <div class="history-content">
+        <div class="duty-info">公共区: ${record.public}</div>
+        <div class="duty-info">南卧+中卧: ${record.south}</div>
+        <div class="duty-info">北卧+厅卧: ${record.north}</div>
+      </div>
+    `;
+    
+    container.appendChild(item);
+  });
+}
+
+function calculateStats() {
+  const history = JSON.parse(localStorage.getItem('dutyHistory') || '[]');
+  
+  const publicCount = {};
+  const southCount = {};
+  const northCount = {};
+  
+  history.forEach(record => {
+    publicCount[record.public] = (publicCount[record.public] || 0) + 1;
+    southCount[record.south] = (southCount[record.south] || 0) + 1;
+    northCount[record.north] = (northCount[record.north] || 0) + 1;
+  });
+  
+  const container = document.getElementById('statsContainer');
+  container.innerHTML = '';
+  
+  const areas = [
+    { title: '公共区统计', data: publicCount, color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
+    { title: '南卧+中卧统计', data: southCount, color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
+    { title: '北卧+厅卧统计', data: northCount, color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }
+  ];
+  
+  areas.forEach(area => {
+    const sorted = Object.entries(area.data).sort((a, b) => b[1] - a[1]);
+    
+    const card = document.createElement('div');
+    card.className = 'stat-card';
+    card.style.background = area.color;
+    
+    let listHtml = sorted.map(([name, count]) => 
+      `<div>${name}: ${count}次</div>`
+    ).join('');
+    
+    if (listHtml === '') {
+      listHtml = '<div>暂无数据</div>';
+    }
+    
+    card.innerHTML = `
+      <div class="stat-title">${area.title}</div>
+      <div class="stat-list">${listHtml}</div>
+    `;
+    
+    container.appendChild(card);
+  });
+}
+
+function filterHistory() {
+  const searchText = document.getElementById('searchBox').value.toLowerCase();
+  const items = document.querySelectorAll('.history-item');
+  
+  items.forEach(item => {
+    const text = item.textContent.toLowerCase();
+    if (text.includes(searchText)) {
+      item.style.display = 'block';
+    } else {
+      item.style.display = 'none';
+    }
+  });
+}
+
+window.onload = () => {
+  loadTheme();
+  displayHistory();
+  calculateStats();
+};
+</script>
+
+</body>
+</html>
