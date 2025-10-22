@@ -3,42 +3,145 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>值日轮值系统 - 登录</title>
+<title>HomeHotel 值日轮值系统 - 登录</title>
 <style>
-  /* 全局样式 */
+  :root {
+    --bg-gradient-start: #e0f0ff;
+    --bg-gradient-end: #f0f4f8;
+    --primary-color: #1e3d59;
+    --primary-hover: #3a5a77;
+    --text-color: #333;
+    --card-bg: #fff;
+    --shadow: rgba(0,0,0,0.08);
+    --border-color: #ccc;
+    --success-color: #28a745;
+    --error-color: #dc3545;
+  }
+
+  [data-theme="dark"] {
+    --bg-gradient-start: #1a1a2e;
+    --bg-gradient-end: #16213e;
+    --primary-color: #4a90e2;
+    --primary-hover: #357abd;
+    --text-color: #f5f5f5;
+    --card-bg: #2d3748;
+    --shadow: rgba(0,0,0,0.3);
+    --border-color: #4a5568;
+  }
+
+  * {
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  }
+
   body {
     font-family: "Microsoft YaHei", Arial, sans-serif;
-    background: linear-gradient(to bottom, #e0f0ff, #f0f4f8);
+    background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
     margin: 0;
     padding: 0;
-    color: #333;
-    height: 100vh;
+    color: var(--text-color);
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    position: relative;
+    overflow: hidden;
   }
+
+  body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
   h1 {
     text-align: center;
-    padding: 0 0 20px 0;
-    color: #1e3d59;
-    font-size: 2.2em;
+    padding: 0 0 30px 0;
+    color: var(--primary-color);
+    font-size: 2.5em;
     margin: 0;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    animation: fadeInDown 0.8s ease;
+    position: relative;
+    z-index: 1;
   }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   .container {
     width: 90%;
-    max-width: 400px;
-    margin: auto;
+    max-width: 450px;
+    margin: 0 auto;
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 1;
   }
 
   /* 登录表单样式 */
   .login-form {
-    background: #fff;
-    padding: 30px 25px;
-    border-radius: 14px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    background: var(--card-bg);
+    padding: 40px 35px;
+    border-radius: 20px;
+    box-shadow: 
+      0 20px 40px rgba(0,0,0,0.1),
+      0 8px 16px rgba(0,0,0,0.05),
+      inset 0 1px 0 rgba(255,255,255,0.1);
     width: 100%;
+    box-sizing: border-box;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    animation: slideInUp 0.8s ease 0.2s both;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .login-form::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c);
+    background-size: 200% 100%;
+    animation: gradientShift 3s ease infinite;
+  }
+
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
   }
   
   /* 响应式样式 */
@@ -60,80 +163,201 @@
   }
   
   .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    width: 100%;
+    position: relative;
   }
   
   label {
     display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: #1e3d59;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 1.1em;
+    position: relative;
+  }
+
+  label::before {
+    content: '';
+    position: absolute;
+    left: -15px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 20px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 2px;
   }
   
   input[type="text"],
   input[type="password"] {
     width: 100%;
-    padding: 12px 15px;
-    font-size: 1em;
-    border-radius: 8px;
-    border: 1px solid #ccc;
+    padding: 15px 20px;
+    font-size: 1.1em;
+    border-radius: 12px;
+    border: 2px solid var(--border-color);
     box-sizing: border-box;
-    transition: border-color 0.3s;
+    transition: all 0.3s ease;
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(5px);
+    color: var(--text-color);
   }
   
   input[type="text"]:focus,
   input[type="password"]:focus {
-    border-color: #1e3d59;
+    border-color: var(--primary-color);
     outline: none;
-    box-shadow: 0 0 0 2px rgba(30, 61, 89, 0.2);
+    box-shadow: 
+      0 0 0 4px rgba(30, 61, 89, 0.1),
+      0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+    background: rgba(255,255,255,0.95);
+  }
+
+  input[type="text"]:hover,
+  input[type="password"]:hover {
+    border-color: var(--primary-hover);
+    transform: translateY(-1px);
   }
   
   .btn {
-    background: #1e3d59;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
     color: #fff;
     border: none;
-    padding: 12px 20px;
-    border-radius: 10px;
+    padding: 15px 30px;
+    border-radius: 12px;
     cursor: pointer;
-    font-size: 1em;
+    font-size: 1.1em;
+    font-weight: 600;
     width: 100%;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(30, 61, 89, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  .btn:hover::before {
+    left: 100%;
   }
   
   .btn:hover {
-    background: #3a5a77;
-    transform: translateY(-2px);
+    background: linear-gradient(135deg, var(--primary-hover), var(--primary-color));
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(30, 61, 89, 0.4);
+  }
+
+  .btn:active {
+    transform: translateY(-1px) scale(0.98);
+    transition: all 0.1s ease;
   }
   
   .error-message {
-    color: #e74c3c;
+    color: var(--error-color);
     margin-top: 15px;
     text-align: center;
     display: none;
+    padding: 10px;
+    background: rgba(220, 53, 69, 0.1);
+    border-radius: 8px;
+    border-left: 4px solid var(--error-color);
+    animation: shake 0.5s ease-in-out;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
   }
   
   .back-link {
     text-align: center;
-    margin-top: 20px;
+    margin-top: 25px;
+    width: 100%;
   }
   
   .back-link a {
-    color: #1e3d59;
+    color: var(--primary-color);
     text-decoration: none;
   }
   
   .back-link a:hover {
     text-decoration: underline;
+    color: var(--primary-hover);
+  }
+
+  .theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 50%;
+    width: 55px;
+    height: 55px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6em;
+    z-index: 1000;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3), 
+                0 4px 12px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .theme-toggle:hover {
+    transform: scale(1.15) rotate(20deg);
+    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4), 
+                0 6px 20px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  }
+
+  .theme-toggle:active {
+    transform: scale(1.05) rotate(10deg);
+    transition: all 0.1s ease;
+  }
+
+  [data-theme="dark"] .theme-toggle {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    box-shadow: 0 8px 25px rgba(252, 182, 159, 0.3), 
+                0 4px 12px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  [data-theme="dark"] .theme-toggle:hover {
+    background: linear-gradient(135deg, #fcb69f 0%, #ffecd2 100%);
+    box-shadow: 0 12px 35px rgba(252, 182, 159, 0.4), 
+                0 6px 20px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
 </style>
 </head>
 <body>
 
+<div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+  <span id="themeIcon">🌙</span>
+</div>
+
 <div class="container">
-  <h1>值日轮值系统</h1>
+  <h1>HomeHotel 值日轮值系统</h1>
   
   <div class="login-form">
-    <h2 style="text-align: center; margin-top: 0; margin-bottom: 25px; color: #1e3d59;">管理员登录</h2>
+    <h2 style="text-align: center; margin-top: 0; margin-bottom: 25px; color: var(--primary-color);">管理员登录</h2>
     
     <div class="form-group">
       <label for="username">账号：</label>
@@ -157,9 +381,7 @@
   </div>
 </div>
 
-<script type="module">
-  import { ADMIN_USERNAME, ADMIN_PASSWORD } from './firebase-config.js';
-
+<script>
   function login() {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
@@ -167,9 +389,9 @@
     
     // 验证账号和密码
     // 验证账号和密码
-    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-      // 使用 sessionStorage 标记登录状态
-      sessionStorage.setItem('isLoggedIn', 'true');
+    if (username === 'admin' && password === '17108') {
+      // 登录成功，设置登录状态并跳转到管理页面
+      localStorage.setItem('isLoggedIn', 'true');
       window.location.href = 'manage.html';
     } else {
       // 登录失败，显示错误信息
@@ -189,8 +411,34 @@
     }
   });
 
-  // 使按钮的 onclick="login()" 可用
-  window.login = login;
+  // 主题切换功能
+  function toggleTheme() {
+    const body = document.body;
+    const themeIcon = document.getElementById('themeIcon');
+    
+    if (body.getAttribute('data-theme') === 'dark') {
+      body.removeAttribute('data-theme');
+      themeIcon.textContent = '🌙';
+      localStorage.setItem('theme', 'light');
+    } else {
+      body.setAttribute('data-theme', 'dark');
+      themeIcon.textContent = '☀️';
+      localStorage.setItem('theme', 'dark');
+    }
+  }
+
+  // 页面加载时应用保存的主题
+  window.onload = function() {
+    const savedTheme = localStorage.getItem('theme');
+    const themeIcon = document.getElementById('themeIcon');
+    
+    if (savedTheme === 'dark') {
+      document.body.setAttribute('data-theme', 'dark');
+      themeIcon.textContent = '☀️';
+    } else {
+      themeIcon.textContent = '🌙';
+    }
+  };
 </script>
 
 </body>

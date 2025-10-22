@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>值日轮值系统 - 操作日志</title>
+<title>HomeHotel 值日轮值系统 - 操作日志</title>
 <style>
   :root {
     --bg-gradient-start: #e0f0ff;
@@ -21,7 +21,7 @@
     --bg-gradient-end: #16213e;
     --primary-color: #4a90e2;
     --primary-hover: #357abd;
-    --text-color: #e0e0e0;
+    --text-color: #f5f5f5;
     --card-bg: #2d3748;
     --shadow: rgba(0,0,0,0.3);
     --border-color: #4a5568;
@@ -33,20 +33,40 @@
 
   body {
     font-family: "Microsoft YaHei", Arial, sans-serif;
-    background: linear-gradient(to bottom, var(--bg-gradient-start), var(--bg-gradient-end));
+    background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
     margin: 0;
     padding: 0;
     color: var(--text-color);
     min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+    pointer-events: none;
   }
 
   h1 {
     text-align: center;
     padding: 40px 0 20px 0;
     color: var(--primary-color);
-    font-size: 2.2em;
+    font-size: 2.5em;
     margin: 0;
-    animation: fadeInDown 0.6s ease;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    animation: fadeInDown 0.8s ease;
+    position: relative;
+    z-index: 1;
   }
 
   @keyframes fadeInDown {
@@ -88,23 +108,50 @@
     position: fixed;
     top: 20px;
     right: 20px;
-    background: var(--card-bg);
-    border: 2px solid var(--primary-color);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
     border-radius: 50%;
-    width: 50px;
-    height: 50px;
+    width: 55px;
+    height: 55px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5em;
+    font-size: 1.6em;
     z-index: 1000;
-    box-shadow: 0 4px 12px var(--shadow);
-    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3), 
+                0 4px 12px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .theme-toggle:hover {
-    transform: scale(1.1) rotate(15deg);
+    transform: scale(1.15) rotate(20deg);
+    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4), 
+                0 6px 20px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  }
+
+  .theme-toggle:active {
+    transform: scale(1.05) rotate(10deg);
+    transition: all 0.1s ease;
+  }
+
+  [data-theme="dark"] .theme-toggle {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    box-shadow: 0 8px 25px rgba(252, 182, 159, 0.3), 
+                0 4px 12px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  [data-theme="dark"] .theme-toggle:hover {
+    background: linear-gradient(135deg, #fcb69f 0%, #ffecd2 100%);
+    box-shadow: 0 12px 35px rgba(252, 182, 159, 0.4), 
+                0 6px 20px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
 
   .section {
@@ -166,12 +213,9 @@
 
   .log-time {
     font-size: 0.9em;
-    color: #666;
+    color: var(--text-color);
+    opacity: 0.7;
     margin-bottom: 5px;
-  }
-
-  [data-theme="dark"] .log-time {
-    color: #aaa;
   }
 
   .log-action {
@@ -265,22 +309,161 @@
     opacity: 0.9;
   }
 
+  /* 密码验证弹窗样式 */
+  .password-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    backdrop-filter: blur(5px);
+  }
+
+  .password-modal-content {
+    background: var(--card-bg);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    animation: modalSlideIn 0.3s ease;
+  }
+
+  @keyframes modalSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-50px) scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .password-modal h2 {
+    margin: 0 0 20px 0;
+    color: var(--primary-color);
+    font-size: 1.8em;
+  }
+
+  .password-modal p {
+    margin: 0 0 25px 0;
+    color: var(--text-color);
+    font-size: 1.1em;
+  }
+
+  .password-input {
+    width: 100%;
+    padding: 15px 20px;
+    font-size: 1.1em;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    text-align: center;
+    letter-spacing: 2px;
+    background: var(--card-bg);
+    color: var(--text-color);
+  }
+
+  .password-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(30, 61, 89, 0.1);
+  }
+
+  .password-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+  }
+
+  .password-btn {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    min-width: 100px;
+  }
+
+  .password-btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .password-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+  }
+
+  .password-btn-secondary {
+    background: #f8f9fa;
+    color: var(--text-color);
+    border: 2px solid var(--border-color);
+  }
+
+  .password-btn-secondary:hover {
+    background: #e9ecef;
+    transform: translateY(-1px);
+  }
+
+  .password-error {
+    color: #e74c3c;
+    margin-top: 15px;
+    font-weight: bold;
+    display: none;
+  }
+
+  .password-success {
+    color: #27ae60;
+    margin-top: 15px;
+    font-weight: bold;
+    display: none;
+  }
+
   @media (max-width: 768px) {
     .container { width: 95%; padding: 10px; }
     h1 { padding: 20px 0 10px 0; font-size: 1.8em; }
     .section { padding: 15px; }
     .filter-buttons { gap: 5px; }
     .filter-btn { padding: 6px 12px; font-size: 0.9em; }
+    .password-modal-content { padding: 30px 20px; }
+    .password-buttons { flex-direction: column; }
   }
 </style>
 </head>
 <body>
 
+<!-- 密码验证弹窗 -->
+<div id="passwordModal" class="password-modal">
+  <div class="password-modal-content">
+    <h2>🔐 身份验证</h2>
+    <p>请输入密码以访问操作日志</p>
+    <input type="password" id="passwordInput" class="password-input" placeholder="请输入密码" maxlength="10">
+    <div class="password-buttons">
+      <button class="password-btn password-btn-primary" onclick="verifyPassword()">验证</button>
+      <button class="password-btn password-btn-secondary" onclick="goBack()">返回</button>
+    </div>
+    <div id="passwordError" class="password-error">密码错误，请重试！</div>
+    <div id="passwordSuccess" class="password-success">验证成功！</div>
+  </div>
+</div>
+
 <div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
   <span id="themeIcon">🌙</span>
 </div>
 
-<h1>操作日志</h1>
+<h1>HomeHotel 操作日志</h1>
 
 <div class="container">
   <div style="text-align: center; margin-bottom: 20px;">
@@ -326,38 +509,152 @@
   </div>
 </div>
 
-<script type="module">
-import { db } from './firebase-config.js';
-import { collection, getDocs, query, orderBy, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js';
+<script>
+let currentFilter = 'all';
+let isPasswordVerified = false;
+let passwordAttempts = 0;
+const maxAttempts = 3;
 
-// 简单登录校验：未登录则跳转到登录页
-if (sessionStorage.getItem('isLoggedIn') !== 'true') {
-  window.location.href = 'login.html';
+// 密码验证功能
+function checkPassword() {
+  // 检查是否已经验证过密码
+  const verified = localStorage.getItem('logsPasswordVerified');
+  if (verified === 'true') {
+    isPasswordVerified = true;
+    hidePasswordModal();
+    return;
+  }
+  
+  // 显示密码验证弹窗
+  showPasswordModal();
 }
 
-// 进入操作日志必须二次验证密码
-function requirePassword() {
-  const input = prompt('请输入访问操作日志的密码');
-  if (input === '17108') {
+function showPasswordModal() {
+  document.getElementById('passwordModal').style.display = 'flex';
+  // 延迟聚焦，确保弹窗动画完成后再聚焦
+  setTimeout(() => {
+    document.getElementById('passwordInput').focus();
+  }, 300);
+  // 隐藏主要内容
+  document.querySelector('.container').style.display = 'none';
+  document.querySelector('h1').style.display = 'none';
+  document.querySelector('.theme-toggle').style.display = 'none';
+}
+
+function hidePasswordModal() {
+  document.getElementById('passwordModal').style.display = 'none';
+  // 显示主要内容
+  document.querySelector('.container').style.display = 'block';
+  document.querySelector('h1').style.display = 'block';
+  document.querySelector('.theme-toggle').style.display = 'flex';
+}
+
+function verifyPassword() {
+  const password = document.getElementById('passwordInput').value;
+  const errorDiv = document.getElementById('passwordError');
+  const successDiv = document.getElementById('passwordSuccess');
+  
+  // 隐藏之前的消息
+  errorDiv.style.display = 'none';
+  successDiv.style.display = 'none';
+  
+  if (password === '17108') {
+    // 密码正确
+    successDiv.style.display = 'block';
+    isPasswordVerified = true;
+    passwordAttempts = 0; // 重置尝试次数
+    
+    // 保存验证状态到localStorage（30分钟有效）
+    localStorage.setItem('logsPasswordVerified', 'true');
+    localStorage.setItem('logsPasswordTime', Date.now().toString());
+    
+    // 延迟隐藏弹窗
+    setTimeout(() => {
+      hidePasswordModal();
+      displayLogs();
+    }, 1000);
+  } else {
+    // 密码错误
+    passwordAttempts++;
+    errorDiv.style.display = 'block';
+    
+    if (passwordAttempts >= maxAttempts) {
+      errorDiv.textContent = '尝试次数过多，请稍后再试！';
+      document.getElementById('passwordInput').disabled = true;
+      document.querySelector('.password-btn-primary').disabled = true;
+      
+      // 5分钟后重新启用
+      setTimeout(() => {
+        passwordAttempts = 0;
+        document.getElementById('passwordInput').disabled = false;
+        document.querySelector('.password-btn-primary').disabled = false;
+        errorDiv.textContent = '密码错误，请重试！';
+        errorDiv.style.display = 'none';
+      }, 5 * 60 * 1000);
+    } else {
+      errorDiv.textContent = `密码错误，请重试！(剩余尝试次数: ${maxAttempts - passwordAttempts})`;
+    }
+    
+    document.getElementById('passwordInput').value = '';
+    document.getElementById('passwordInput').focus();
+    
+    // 3秒后隐藏错误信息
+    setTimeout(() => {
+      if (passwordAttempts < maxAttempts) {
+        errorDiv.style.display = 'none';
+      }
+    }, 3000);
+  }
+}
+
+function goBack() {
+  window.location.href = 'index.html';
+}
+
+// 检查密码验证是否过期（30分钟）
+function checkPasswordExpiry() {
+  const verified = localStorage.getItem('logsPasswordVerified');
+  const time = localStorage.getItem('logsPasswordTime');
+  
+  if (verified === 'true' && time) {
+    const now = Date.now();
+    const verifiedTime = parseInt(time);
+    const thirtyMinutes = 30 * 60 * 1000; // 30分钟
+    
+    if (now - verifiedTime > thirtyMinutes) {
+      // 验证已过期
+      localStorage.removeItem('logsPasswordVerified');
+      localStorage.removeItem('logsPasswordTime');
+      return false;
+    }
     return true;
   }
-  alert('密码错误，将返回主页');
-  window.location.href = 'index.html';
   return false;
 }
-let currentFilter = 'all';
-const LOGS_COL = collection(db, 'operationLogs');
+
+// 添加回车键验证功能
+document.addEventListener('DOMContentLoaded', function() {
+  const passwordInput = document.getElementById('passwordInput');
+  if (passwordInput) {
+    passwordInput.addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+        verifyPassword();
+      }
+    });
+  }
+});
 
 function toggleTheme() {
   const html = document.documentElement;
   const currentTheme = html.getAttribute('data-theme');
   const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
   html.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
   document.getElementById('themeIcon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
 }
 
 function loadTheme() {
-  const savedTheme = 'light';
+  const savedTheme = localStorage.getItem('theme') || 'light';
   document.documentElement.setAttribute('data-theme', savedTheme);
   document.getElementById('themeIcon').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
 }
@@ -374,11 +671,12 @@ function formatTime(isoString) {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
-async function displayLogs() {
-  const q = query(LOGS_COL, orderBy('timestamp', 'desc'));
-  const snap = await getDocs(q);
-  const logs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+function displayLogs() {
+  const logs = JSON.parse(localStorage.getItem('operationLogs') || '[]');
   const container = document.getElementById('logsList');
+  
+  console.log('当前日志数量:', logs.length);
+  console.log('日志数据:', logs);
   
   if (logs.length === 0) {
     container.innerHTML = '<div class="empty-state">📋 暂无操作日志</div>';
@@ -390,9 +688,12 @@ async function displayLogs() {
   const searchInput = document.getElementById('searchBox').value.toLowerCase();
   const filteredLogs = logs.filter(log => {
     const matchesSearch = log.action.toLowerCase().includes(searchInput) || log.details.toLowerCase().includes(searchInput);
-    const matchesFilter = currentFilter === 'all' || log.action.includes(currentFilter);
+    const matchesFilter = currentFilter === 'all' || log.action === currentFilter;
     return matchesSearch && matchesFilter;
   });
+  
+  console.log('过滤后的日志数量:', filteredLogs.length);
+  console.log('当前过滤器:', currentFilter);
 
   if (filteredLogs.length === 0) {
     container.innerHTML = '<div class="empty-state">📋 没有找到匹配的日志</div>';
@@ -449,25 +750,25 @@ function updateStats(logs) {
   document.getElementById('weekLogs').textContent = weekLogs;
 }
 
-async function clearLogs() {
-  if (!confirm('确定要清空所有操作日志吗？此操作不可撤销！')) return;
-  const q = query(LOGS_COL);
-  const snap = await getDocs(q);
-  await Promise.all(snap.docs.map(d => deleteDoc(d.ref)));
-  await displayLogs();
+function clearLogs() {
+  if (confirm('确定要清空所有操作日志吗？此操作不可撤销！')) {
+    localStorage.removeItem('operationLogs');
+    displayLogs();
+  }
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-  if (!requirePassword()) return;
+document.addEventListener('DOMContentLoaded', () => {
   loadTheme();
-  await displayLogs();
+  
+  // 检查密码验证
+  if (checkPasswordExpiry()) {
+    isPasswordVerified = true;
+    hidePasswordModal();
+    displayLogs();
+  } else {
+    checkPassword();
+  }
 });
-
-// 将需要由 HTML 调用的函数挂到全局，确保按钮可用
-window.setFilter = setFilter;
-window.filterLogs = filterLogs;
-window.clearLogs = clearLogs;
-window.toggleTheme = toggleTheme;
 </script>
 </body>
 </html>

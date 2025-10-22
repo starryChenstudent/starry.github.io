@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>值日轮值系统 - 历史记录</title>
+<title>HomeHotel 值日轮值系统 - 历史记录</title>
 <style>
   :root {
     --bg-gradient-start: #e0f0ff;
@@ -21,7 +21,7 @@
     --bg-gradient-end: #16213e;
     --primary-color: #4a90e2;
     --primary-hover: #357abd;
-    --text-color: #e0e0e0;
+    --text-color: #f5f5f5;
     --card-bg: #2d3748;
     --shadow: rgba(0,0,0,0.3);
     --border-color: #4a5568;
@@ -33,20 +33,40 @@
 
   body {
     font-family: "Microsoft YaHei", Arial, sans-serif;
-    background: linear-gradient(to bottom, var(--bg-gradient-start), var(--bg-gradient-end));
+    background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
     margin: 0;
     padding: 0;
     color: var(--text-color);
     min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+    pointer-events: none;
   }
 
   h1 {
     text-align: center;
     padding: 40px 0 20px 0;
     color: var(--primary-color);
-    font-size: 2.2em;
+    font-size: 2.5em;
     margin: 0;
-    animation: fadeInDown 0.6s ease;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    animation: fadeInDown 0.8s ease;
+    position: relative;
+    z-index: 1;
   }
 
   @keyframes fadeInDown {
@@ -77,23 +97,50 @@
     position: fixed;
     top: 20px;
     right: 20px;
-    background: var(--card-bg);
-    border: 2px solid var(--primary-color);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
     border-radius: 50%;
-    width: 50px;
-    height: 50px;
+    width: 55px;
+    height: 55px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5em;
+    font-size: 1.6em;
     z-index: 1000;
-    box-shadow: 0 4px 12px var(--shadow);
-    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3), 
+                0 4px 12px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .theme-toggle:hover {
-    transform: scale(1.1) rotate(15deg);
+    transform: scale(1.15) rotate(20deg);
+    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4), 
+                0 6px 20px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  }
+
+  .theme-toggle:active {
+    transform: scale(1.05) rotate(10deg);
+    transition: all 0.1s ease;
+  }
+
+  [data-theme="dark"] .theme-toggle {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    box-shadow: 0 8px 25px rgba(252, 182, 159, 0.3), 
+                0 4px 12px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  [data-theme="dark"] .theme-toggle:hover {
+    background: linear-gradient(135deg, #fcb69f 0%, #ffecd2 100%);
+    box-shadow: 0 12px 35px rgba(252, 182, 159, 0.4), 
+                0 6px 20px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
 
   .section {
@@ -235,7 +282,7 @@
   <span id="themeIcon">🌙</span>
 </div>
 
-<h1>历史记录</h1>
+<h1>HomeHotel 历史记录</h1>
 
 <div class="container">
   <div style="text-align: center; margin-bottom: 20px;">
@@ -259,29 +306,37 @@
   </div>
 </div>
 
-<script type="module">
-import { db } from './firebase-config.js';
-import { collection, getDocs, query, orderBy, deleteDoc, doc, getDoc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js';
-const HISTORY_COL = collection(db, 'dutyHistory');
-const SETTINGS_THEME_DOC = doc(db, 'settings', 'theme');
-async function toggleTheme() {
+<script>
+function addLog(action, details) {
+  const logs = JSON.parse(localStorage.getItem('operationLogs') || '[]');
+  logs.unshift({
+    timestamp: new Date().toISOString(),
+    action: action,
+    details: details
+  });
+  
+  if (logs.length > 200) logs.pop();
+  
+  localStorage.setItem('operationLogs', JSON.stringify(logs));
+}
+
+function toggleTheme() {
   const html = document.documentElement;
   const currentTheme = html.getAttribute('data-theme');
   const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
   html.setAttribute('data-theme', newTheme);
-  // persist theme
-  await setDoc(SETTINGS_THEME_DOC, { value: newTheme }, { merge: true });
+  localStorage.setItem('theme', newTheme);
   document.getElementById('themeIcon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
 }
 
-async function loadTheme() {
-  const snap = await getDoc(SETTINGS_THEME_DOC);
-  const savedTheme = snap.exists() ? (snap.data().value || 'light') : 'light';
+function loadTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'light';
   document.documentElement.setAttribute('data-theme', savedTheme);
   document.getElementById('themeIcon').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
 }
 
-function renderHistoryList(history) {
+function displayHistory() {
+  const history = JSON.parse(localStorage.getItem('dutyHistory') || '[]');
   const container = document.getElementById('historyList');
   
   if (history.length === 0) {
@@ -297,10 +352,10 @@ function renderHistoryList(history) {
     
     const item = document.createElement('div');
     item.className = 'history-item';
-    item.setAttribute('data-id', record.id);
+    item.setAttribute('data-id', `${record.week}-${record.date}`); // 添加唯一标识
     item.innerHTML = `
       <div class="history-date">${record.week} - ${dateStr}
-        <button class="btn" style="background: #e74c3c; float: right; padding: 5px 10px; font-size: 0.8em;" onclick="deleteHistoryItem('${record.id}')">删除</button>
+        <button class="btn" style="background: #e74c3c; float: right; padding: 5px 10px; font-size: 0.8em;" onclick="deleteHistoryItem('${record.week}-${record.date}')">删除</button>
       </div>
       <div class="history-content">
         <div class="duty-info">公共区: ${record.public}</div>
@@ -313,7 +368,8 @@ function renderHistoryList(history) {
   });
 }
 
-function renderStats(history) {
+function calculateStats() {
+  const history = JSON.parse(localStorage.getItem('dutyHistory') || '[]');
   
   const publicCount = {};
   const southCount = {};
@@ -358,17 +414,6 @@ function renderStats(history) {
   });
 }
 
-function listenHistory() {
-  const q = query(HISTORY_COL, orderBy('date', 'desc'));
-  onSnapshot(q, (snap) => {
-    const historyWithId = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    renderHistoryList(historyWithId);
-    renderStats(historyWithId.map(({ id, ...rest }) => rest));
-    // 保持筛选框逻辑仍可用
-    filterHistory();
-  });
-}
-
 function filterHistory() {
   const searchText = document.getElementById('searchBox').value.toLowerCase();
   const items = document.querySelectorAll('.history-item');
@@ -383,32 +428,38 @@ function filterHistory() {
   });
 }
 
-async function clearAllHistory() {
-  if (!confirm('确定要清空所有值日历史记录吗？此操作不可撤销！')) return;
-  const q = query(HISTORY_COL);
-  const snap = await getDocs(q);
-  await Promise.all(snap.docs.map(d => deleteDoc(d.ref)));
-  await displayHistory();
-  await calculateStats();
+function clearAllHistory() {
+  if (confirm('确定要清空所有值日历史记录吗？此操作不可撤销！')) {
+    localStorage.removeItem('dutyHistory');
+    addLog('清空历史记录', '清空了所有值日历史记录');
+    displayHistory();
+    calculateStats();
+  }
 }
 
-async function deleteHistoryItem(id) {
-  if (!confirm('确定要删除这条历史记录吗？')) return;
-  await deleteDoc(doc(db, 'dutyHistory', id));
-  await displayHistory();
-  await calculateStats();
+function deleteHistoryItem(id) {
+  if (confirm('确定要删除这条历史记录吗？')) {
+    let history = JSON.parse(localStorage.getItem('dutyHistory') || '[]');
+    const recordToDelete = history.find(record => `${record.week}-${record.date}` === id);
+    history = history.filter(record => `${record.week}-${record.date}` !== id);
+    localStorage.setItem('dutyHistory', JSON.stringify(history));
+    
+    if (recordToDelete) {
+      const date = new Date(recordToDelete.date);
+      const dateStr = `${date.getFullYear()}年${date.getMonth()+1}月${date.getDate()}日`;
+      addLog('删除历史记录', `删除了 ${recordToDelete.week} - ${dateStr} 的值日记录`);
+    }
+    
+    displayHistory();
+    calculateStats();
+  }
 }
 
-window.onload = async () => {
-  await loadTheme();
-  listenHistory();
+window.onload = () => {
+  loadTheme();
+  displayHistory();
+  calculateStats();
 };
-
-// 将需要由 HTML 直接调用的函数挂到全局
-window.toggleTheme = toggleTheme;
-window.clearAllHistory = clearAllHistory;
-window.deleteHistoryItem = deleteHistoryItem;
-window.filterHistory = filterHistory;
 </script>
 
 </body>

@@ -14,6 +14,10 @@
     --card-bg: #fff;
     --shadow: rgba(0,0,0,0.08);
     --border-color: #ccc;
+    --info-bg: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+    --warning-bg: #fff9e6;
+    --warning-border: #ffa726;
+    --warning-text: #f57c00;
   }
 
   [data-theme="dark"] {
@@ -21,10 +25,14 @@
     --bg-gradient-end: #16213e;
     --primary-color: #4a90e2;
     --primary-hover: #357abd;
-    --text-color: #e0e0e0;
+    --text-color: #f5f5f5;
     --card-bg: #2d3748;
     --shadow: rgba(0,0,0,0.3);
     --border-color: #4a5568;
+    --info-bg: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+    --warning-bg: #4a5568;
+    --warning-border: #f6ad55;
+    --warning-text: #f6ad55;
   }
 
   * {
@@ -76,6 +84,44 @@
     }
   }
 
+  @keyframes pulse {
+    0% { 
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3), 
+                  0 4px 12px rgba(0, 0, 0, 0.15),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+    50% { 
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5), 
+                  0 4px 12px rgba(0, 0, 0, 0.2),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                  0 0 20px rgba(102, 126, 234, 0.3);
+    }
+    100% { 
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3), 
+                  0 4px 12px rgba(0, 0, 0, 0.15),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+  }
+
+  @keyframes pulseDark {
+    0% { 
+      box-shadow: 0 8px 25px rgba(252, 182, 159, 0.3), 
+                  0 4px 12px rgba(0, 0, 0, 0.15),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+    50% { 
+      box-shadow: 0 8px 25px rgba(252, 182, 159, 0.5), 
+                  0 4px 12px rgba(0, 0, 0, 0.2),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                  0 0 20px rgba(252, 182, 159, 0.3);
+    }
+    100% { 
+      box-shadow: 0 8px 25px rgba(252, 182, 159, 0.3), 
+                  0 4px 12px rgba(0, 0, 0, 0.15),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+  }
+
   .container {
     width: 90%;
     max-width: 800px;
@@ -88,23 +134,50 @@
     position: fixed;
     top: 20px;
     right: 20px;
-    background: var(--card-bg);
-    border: 2px solid var(--primary-color);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
     border-radius: 50%;
-    width: 50px;
-    height: 50px;
+    width: 55px;
+    height: 55px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5em;
+    font-size: 1.6em;
     z-index: 1000;
-    box-shadow: 0 4px 12px var(--shadow);
-    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3), 
+                0 4px 12px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .theme-toggle:hover {
-    transform: scale(1.1) rotate(15deg);
+    transform: scale(1.15) rotate(20deg);
+    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4), 
+                0 6px 20px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  }
+
+  .theme-toggle:active {
+    transform: scale(1.05) rotate(10deg);
+    transition: all 0.1s ease;
+  }
+
+  [data-theme="dark"] .theme-toggle {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    box-shadow: 0 8px 25px rgba(252, 182, 159, 0.3), 
+                0 4px 12px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  [data-theme="dark"] .theme-toggle:hover {
+    background: linear-gradient(135deg, #fcb69f 0%, #ffecd2 100%);
+    box-shadow: 0 12px 35px rgba(252, 182, 159, 0.4), 
+                0 6px 20px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
 
   .section {
@@ -200,28 +273,85 @@
   .hamburger {
     display: none;
     position: fixed;
-    top: 20px;
-    left: 20px;
-    background: var(--card-bg);
-    border: 2px solid var(--primary-color);
-    border-radius: 8px;
-    width: 50px;
-    height: 50px;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
     cursor: pointer;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
     z-index: 1001;
-    box-shadow: 0 4px 12px var(--shadow);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3), 
+                0 4px 12px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: pulse 3s ease-in-out infinite;
+  }
+
+  .hamburger:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    transform: translateY(-50%) scale(1.15) rotate(20deg);
+    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4), 
+                0 6px 20px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+
+  .hamburger:active {
+    transform: translateY(-50%) scale(1.05) rotate(10deg);
+    transition: all 0.1s ease;
+  }
+
+  [data-theme="dark"] .hamburger {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    box-shadow: 0 8px 25px rgba(252, 182, 159, 0.3), 
+                0 4px 12px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    animation: pulseDark 3s ease-in-out infinite;
+  }
+
+  [data-theme="dark"] .hamburger:hover {
+    background: linear-gradient(135deg, #fcb69f 0%, #ffecd2 100%);
+    box-shadow: 0 12px 35px rgba(252, 182, 159, 0.4), 
+                0 6px 20px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
 
   .hamburger span {
-    width: 25px;
+    width: 28px;
     height: 3px;
-    background: var(--primary-color);
-    border-radius: 2px;
-    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 3px;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  .hamburger:hover span {
+    background: rgba(255, 255, 255, 1);
+    transform: scale(1.1);
+  }
+
+  .hamburger:hover span:nth-child(1) {
+    transform: translateY(-2px) scale(1.1);
+  }
+
+  .hamburger:hover span:nth-child(3) {
+    transform: translateY(2px) scale(1.1);
+  }
+
+  [data-theme="dark"] .hamburger span {
+    background: rgba(0, 0, 0, 0.7);
+  }
+
+  [data-theme="dark"] .hamburger:hover span {
+    background: rgba(0, 0, 0, 0.9);
   }
 
   .mobile-menu {
@@ -273,7 +403,7 @@
     .section { padding: 15px; }
     .nav-links { display: none; }
     .hamburger { display: flex; }
-    .theme-toggle { top: 80px; right: 10px; width: 45px; height: 45px; }
+    .theme-toggle { top: 20px; right: 20px; width: 45px; height: 45px; }
   }
 </style>
 </head>
@@ -298,7 +428,7 @@
   <button onclick="window.location.href='logs.html'" class="btn">操作日志</button>
 </div>
 
-<h1>Homehotel 值日轮值系统</h1>
+<h1>HomeHotel 值日轮值系统</h1>
 
 <div id="current-time"></div>
 
@@ -320,52 +450,53 @@
     <p>公共区:<span id="thisPublic">-</span></p>
     <p>南卧+中卧:<span id="thisSouth">-</span></p>
     <p>北卧+厅卧:<span id="thisNorth">-</span></p>
-    <div style="margin-top: 10px; font-size: 0.9em; line-height: 1.6; color: var(--text-color);">
-      <div style="margin-bottom: 8px;"><span style="font-weight: bold; color: var(--primary-color);">🌇公共区域：📺客厅&♨️厨房💻（平均8个月轮一回）</span><br>负责内容：①每天早和晚倒1次客厅垃圾🗑②每周中客厅扫一次2mins（地面随脏随扫），每周末公共区域拖一次地面20mins<br>
-      <div style="margin-bottom: 8px;"><span style="font-weight: bold; color: var(--primary-color);">🏠卧室区域：南卧+中卧（平均3-4个月轮一回）</span><br>负责内容：①卧室卫生保持，周中随脏随扫，每周末扫、拖一次（5mins）；②卧室里垃圾随满随倒🗑；③南卧和中卧统一轮卧室值日，北卧和厅卧统一轮卧室值日。<br>
-      <div><span style="font-weight: bold; color: var(--primary-color);">🏠卧室区域：北卧+厅卧（平均3-4个月轮一回）</span><br>负责内容：①卧室卫生保持，周中随脏随扫，每周末扫、拖一次（5mins）；②卧室里垃圾随满随倒🗑；③南卧和中卧统一轮卧室值日，北卧和厅卧统一轮室值日。<br>
-    </div>
   </div>
 
   <div class="section">
-    <h2>选择上周值日生</h2>
+    <h2>手动设置值日</h2>
+    <div style="margin-bottom: 20px; padding: 15px; background: var(--info-bg); border-radius: 10px; border-left: 4px solid var(--primary-color);">
+      <label style="display: flex; align-items: center; gap: 10px; font-weight: bold; margin-bottom: 10px;">
+        📅 选择要设置值日的日期（本周）:
+        <input type="date" id="selectedDate" style="flex-grow: 1; padding: 10px 12px; font-size: 1em; border-radius: 8px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color);">
+      </label>
+      <div style="font-size: 0.9em; color: var(--text-color); opacity: 0.8; margin-top: 8px; line-height: 1.6;">
+        💡 <strong>操作说明：</strong><br>
+        1️⃣ 先选择需要安排值日的日期（例如：10月27日）<br>
+        2️⃣ 再在下方选择上周的值日生是谁<br>
+        3️⃣ 系统会自动计算并设置该日期所在整周的值日生
+      </div>
+    </div>
     <div id="editLock" style="margin-bottom: 15px; display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
       <input type="password" id="editPassword" placeholder="请输入密码以解锁" style="flex-grow: 1; padding: 10px 12px; font-size: 1em; border-radius: 8px; border: 1px solid var(--border-color); min-width: 150px; background: var(--card-bg); color: var(--text-color);">
       <button class="btn" onclick="unlockEdit()">解锁</button>
       <span id="unlockStatus" style="margin-left: 10px; font-weight: bold; display: none;"></span>
     </div>
-    <div style="margin-bottom: 10px;">
-      <label style="display: flex; align-items: center; gap: 10px; font-weight: bold;">公共区:
-        <select id="lastPublic" disabled style="flex-grow: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 1em; background: var(--card-bg); color: var(--text-color);"></select>
-      </label>
+    <div style="margin-bottom: 15px; padding: 12px; background: var(--warning-bg); border-radius: 8px; border: 1px dashed var(--warning-border);">
+      <div style="font-weight: bold; color: var(--warning-text); margin-bottom: 10px;">
+        ⬅️ 选择上周的值日生（用于计算本周轮换）
+      </div>
+      <div style="margin-bottom: 10px;">
+        <label style="display: flex; align-items: center; gap: 10px; font-weight: bold;">公共区（上周）:
+          <select id="lastPublic" disabled style="flex-grow: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 1em; background: var(--card-bg); color: var(--text-color);"></select>
+        </label>
+      </div>
+      <div style="margin-bottom: 10px;">
+        <label style="display: flex; align-items: center; gap: 10px; font-weight: bold;">南卧+中卧（上周）:
+          <select id="lastSouth" disabled style="flex-grow: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 1em; background: var(--card-bg); color: var(--text-color);"></select>
+        </label>
+      </div>
+      <div style="margin-bottom: 0;">
+        <label style="display: flex; align-items: center; gap: 10px; font-weight: bold;">北卧+厅卧（上周）:
+          <select id="lastNorth" disabled style="flex-grow: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 1em; background: var(--card-bg); color: var(--text-color);"></select>
+        </label>
+      </div>
     </div>
-    <div style="margin-bottom: 10px;">
-      <label style="display: flex; align-items: center; gap: 10px; font-weight: bold;">南卧+中卧:
-        <select id="lastSouth" disabled style="flex-grow: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 1em; background: var(--card-bg); color: var(--text-color);"></select>
-      </label>
-    </div>
-    <div style="margin-bottom: 15px;">
-      <label style="display: flex; align-items: center; gap: 10px; font-weight: bold;">北卧+厅卧:
-        <select id="lastNorth" disabled style="flex-grow: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 1em; background: var(--card-bg); color: var(--text-color);"></select>
-      </label>
-    </div>
-    <button id="confirmBtn" class="btn" onclick="manualCalculateThisWeek()" disabled style="background: #28a745;">确定本周值日</button>
+    <button id="confirmBtn" class="btn" onclick="manualCalculateThisWeek()" disabled style="background: #28a745; width: 100%; font-size: 1.1em; padding: 15px;">✅ 确定并设置所选日期周的值日生</button>
   </div>
-
 
 </div>
 
-<script type="module">
-import { db } from './firebase-config.js';
-import { 
-  collection, doc, getDoc, setDoc, updateDoc, addDoc, getDocs, query, orderBy
-} from 'https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js';
-
-const MEMBERS_DOC = doc(db, 'members', 'areas');
-const STATE_DOC = doc(db, 'state', 'rotationState');
-const SETTINGS_THEME_DOC = doc(db, 'settings', 'theme');
-const HISTORY_COL = collection(db, 'dutyHistory');
-const LOGS_COL = collection(db, 'operationLogs');
+<script>
 function toggleMenu() {
   const menu = document.querySelector('.mobile-menu');
   const overlay = document.querySelector('.overlay');
@@ -373,44 +504,33 @@ function toggleMenu() {
   overlay.classList.toggle('active');
 }
 
-async function toggleTheme() {
+function toggleTheme() {
   const html = document.documentElement;
   const currentTheme = html.getAttribute('data-theme');
   const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
   html.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
   document.getElementById('themeIcon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
-  await setDoc(SETTINGS_THEME_DOC, { value: newTheme }, { merge: true });
 }
 
-async function loadTheme() {
-  const snap = await getDoc(SETTINGS_THEME_DOC);
-  const savedTheme = snap.exists() ? (snap.data().value || 'light') : 'light';
+function loadTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'light';
   document.documentElement.setAttribute('data-theme', savedTheme);
   document.getElementById('themeIcon').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
 }
 
-async function getMembersOrSeed() {
-  const snap = await getDoc(MEMBERS_DOC);
-  const defaults = {
-    publicAreaMembers: ["镇","旭","大龙","原","磊","泽","深","淳","嶶","飞","学治","勇","清","义志","枫","峰","星宇","茗","龚","军","帆","嶶","林","剑","哲","圣"],
-    southAreaMembers: ["叶","峰","浩","学治","深","清","义志","泽","龙","旭","飞","茗","龚","帆"],
-    northAreaMembers: ["原","枫","磊","星宇","镇","军","剑","哲","圣","林","淳"]
-  };
-  if (!snap.exists()) {
-    await setDoc(MEMBERS_DOC, defaults);
-    return defaults;
-  }
-  const data = snap.data();
-  return {
-    publicAreaMembers: data.publicAreaMembers || defaults.publicAreaMembers,
-    southAreaMembers: data.southAreaMembers || defaults.southAreaMembers,
-    northAreaMembers: data.northAreaMembers || defaults.northAreaMembers
-  };
+function getAreaMembers(areaKey, defaultList) {
+  const savedData = localStorage.getItem(areaKey);
+  return savedData ? JSON.parse(savedData) : defaultList;
 }
 
-let publicArea = [];
-let southArea = [];
-let northArea = [];
+const defaultPublicArea = ["镇","旭","大龙","原","磊","泽","深","淳","嶶","飞","学治","勇","清","义志","枫","峰","星宇","茗","龚","军","帆","嶶","林","剑","哲","圣"];
+const defaultSouthArea = ["叶","峰","浩","学治","深","清","义志","泽","龙","旭","飞","茗","龚","帆"];
+const defaultNorthArea = ["原","枫","磊","星宇","镇","军","剑","哲","圣","林","淳"];
+
+const publicArea = getAreaMembers("publicAreaMembers", defaultPublicArea);
+const southArea = getAreaMembers("southAreaMembers", defaultSouthArea);
+const northArea = getAreaMembers("northAreaMembers", defaultNorthArea);
 
 function fillDropdown(id, list) {
   const sel = document.getElementById(id);
@@ -436,27 +556,38 @@ function getWeekNumber(date) {
   return `${d.getUTCFullYear()}-W${weekNo}`;
 }
 
-async function saveToHistory(publicName, southName, northName) {
+function saveToHistory(publicName, southName, northName) {
+  const history = JSON.parse(localStorage.getItem('dutyHistory') || '[]');
   const today = new Date();
   const weekNum = getWeekNumber(today);
-  await addDoc(HISTORY_COL, {
+  
+  history.unshift({
     date: today.toISOString(),
     week: weekNum,
     public: publicName,
     south: southName,
     north: northName
   });
+  
+  if (history.length > 100) history.pop();
+  
+  localStorage.setItem('dutyHistory', JSON.stringify(history));
 }
 
-async function addLog(action, details) {
-  await addDoc(LOGS_COL, {
+function addLog(action, details) {
+  const logs = JSON.parse(localStorage.getItem('operationLogs') || '[]');
+  logs.unshift({
     timestamp: new Date().toISOString(),
     action: action,
     details: details
   });
+  
+  if (logs.length > 200) logs.pop();
+  
+  localStorage.setItem('operationLogs', JSON.stringify(logs));
 }
 
-async function manualCalculateThisWeek() {
+function manualCalculateThisWeek() {
   const lastPublic = document.getElementById("lastPublic").value;
   const lastSouth = document.getElementById("lastSouth").value;
   const lastNorth = document.getElementById("lastNorth").value;
@@ -469,16 +600,48 @@ async function manualCalculateThisWeek() {
   document.getElementById("thisSouth").textContent = thisSouth;
   document.getElementById("thisNorth").textContent = thisNorth;
 
-  const today = new Date();
-  await setDoc(STATE_DOC, {
-    lastPublic: lastPublic,
-    lastSouth: lastSouth,
-    lastNorth: lastNorth,
-    lastRotationWeek: getWeekNumber(today)
-  }, { merge: true });
+  localStorage.setItem("lastPublic", lastPublic);
+  localStorage.setItem("lastSouth", lastSouth);
+  localStorage.setItem("lastNorth", lastNorth);
+
+  // 获取用户选择的日期，如果没有选择则使用当前日期
+  const selectedDateInput = document.getElementById("selectedDate");
+  const targetDate = selectedDateInput.value ? new Date(selectedDateInput.value + 'T00:00:00') : new Date();
+  const currentWeek = getWeekNumber(targetDate);
+  localStorage.setItem('lastRotationWeek', currentWeek);
   
-  await saveToHistory(thisPublic, thisSouth, thisNorth);
-  await addLog('手动设置值日', `公共区:${thisPublic}, 南卧+中卧:${thisSouth}, 北卧+厅卧:${thisNorth}`);
+  // 更新整个一周的值日安排，传入选择的日期
+  updateWeeklyDuty(currentWeek, thisPublic, thisSouth, thisNorth, targetDate);
+  
+  const dateStr = `${targetDate.getFullYear()}年${targetDate.getMonth()+1}月${targetDate.getDate()}日`;
+  addLog('手动设置值日', `${dateStr} (${currentWeek}) - 公共区:${thisPublic}, 南卧+中卧:${thisSouth}, 北卧+厅卧:${thisNorth} (整周安排)`);
+  
+  alert(`✅ 已成功设置 ${dateStr} 所在周 (${currentWeek}) 的值日生！\n\n公共区: ${thisPublic}\n南卧+中卧: ${thisSouth}\n北卧+厅卧: ${thisNorth}`);
+}
+
+// 新增函数：更新整个一周的值日安排
+function updateWeeklyDuty(weekNum, publicName, southName, northName, targetDate) {
+  const history = JSON.parse(localStorage.getItem('dutyHistory') || '[]');
+  
+  // 移除该周已有的记录
+  const filteredHistory = history.filter(record => record.week !== weekNum);
+  
+  // 添加新的值日安排，使用传入的日期或当前日期
+  const dateToUse = targetDate || new Date();
+  filteredHistory.unshift({
+    date: dateToUse.toISOString(),
+    week: weekNum,
+    public: publicName,
+    south: southName,
+    north: northName
+  });
+  
+  // 保持历史记录数量限制
+  if (filteredHistory.length > 100) {
+    filteredHistory.splice(100);
+  }
+  
+  localStorage.setItem('dutyHistory', JSON.stringify(filteredHistory));
 }
 
 function nextPerson(list, lastName) {
@@ -529,56 +692,50 @@ function updateTime() {
   const timeElement = document.getElementById('current-time');
   if (!timeElement) return;
   const now = new Date();
-  const weekdays = ['日','一','二','三','四','五','六'];
-  const weekday = weekdays[now.getDay()];
   const timeStr = 
-    `${now.getFullYear()}年${String(now.getMonth()+1).padStart(2,'0')}月${String(now.getDate()).padStart(2,'0')}日 星期${weekday} ` +
+    `${now.getFullYear()}年${String(now.getMonth()+1).padStart(2,'0')}月${String(now.getDate()).padStart(2,'0')}日 ` +
     `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
   timeElement.textContent = timeStr;
 }
 
-async function displayCurrentDuty() {
-  const stateSnap = await getDoc(STATE_DOC);
-  const state = stateSnap.exists() ? stateSnap.data() : {};
-  const lastPublic = state.lastPublic || publicArea[publicArea.length - 1];
-  const lastSouth = state.lastSouth || southArea[southArea.length - 1];
-  const lastNorth = state.lastNorth || northArea[northArea.length - 1];
+function displayCurrentDuty() {
+  const lastPublic = localStorage.getItem("lastPublic") || publicArea[publicArea.length - 1];
+  const lastSouth = localStorage.getItem("lastSouth") || southArea[southArea.length - 1];
+  const lastNorth = localStorage.getItem("lastNorth") || northArea[northArea.length - 1];
 
   document.getElementById("thisPublic").textContent = nextPerson(publicArea, lastPublic);
   document.getElementById("thisSouth").textContent = nextPerson(southArea, lastSouth);
   document.getElementById("thisNorth").textContent = nextPerson(northArea, lastNorth);
 }
 
-async function checkAndAutoRotate() {
+function checkAndAutoRotate() {
   const today = new Date();
   const currentWeek = getWeekNumber(today);
-  const stateSnap = await getDoc(STATE_DOC);
-  const state = stateSnap.exists() ? stateSnap.data() : {};
-  const lastRotationWeek = state.lastRotationWeek;
+  const lastRotationWeek = localStorage.getItem('lastRotationWeek');
 
   if (!lastRotationWeek || lastRotationWeek !== currentWeek) {
-    const lastPublic = state.lastPublic || publicArea[publicArea.length - 1];
-    const lastSouth = state.lastSouth || southArea[southArea.length - 1];
-    const lastNorth = state.lastNorth || northArea[northArea.length - 1];
+    const lastPublic = localStorage.getItem("lastPublic") || publicArea[publicArea.length - 1];
+    const lastSouth = localStorage.getItem("lastSouth") || southArea[southArea.length - 1];
+    const lastNorth = localStorage.getItem("lastNorth") || northArea[northArea.length - 1];
 
     const thisPublic = nextPerson(publicArea, lastPublic);
     const thisSouth = nextPerson(southArea, lastSouth);
     const thisNorth = nextPerson(northArea, lastNorth);
 
-    await setDoc(STATE_DOC, {
-      lastPublic: thisPublic,
-      lastSouth: thisSouth,
-      lastNorth: thisNorth,
-      lastRotationWeek: currentWeek
-    }, { merge: true });
+    localStorage.setItem("lastPublic", thisPublic);
+    localStorage.setItem("lastSouth", thisSouth);
+    localStorage.setItem("lastNorth", thisNorth);
+    localStorage.setItem('lastRotationWeek', currentWeek);
 
     document.getElementById("lastPublic").value = thisPublic;
     document.getElementById("lastSouth").value = thisSouth;
     document.getElementById("lastNorth").value = thisNorth;
 
-    await displayCurrentDuty();
-    await saveToHistory(thisPublic, thisSouth, thisNorth);
-    await addLog('自动轮换', `新的一周自动轮换值日生`);
+    displayCurrentDuty();
+    
+    // 更新整个一周的值日安排
+    updateWeeklyDuty(currentWeek, thisPublic, thisSouth, thisNorth);
+    addLog('自动轮换', `新的一周自动轮换值日生 (整周安排)`);
     
     const notice = document.getElementById('autoRotationNotice');
     if (notice) {
@@ -588,37 +745,28 @@ async function checkAndAutoRotate() {
       }, 5000);
     }
   } else {
-    await displayCurrentDuty();
+    displayCurrentDuty();
   }
 }
 
-window.onload = async () => {
-  await loadTheme();
-  const members = await getMembersOrSeed();
-  publicArea = members.publicAreaMembers;
-  southArea = members.southAreaMembers;
-  northArea = members.northAreaMembers;
-  fillDropdown("lastPublic", publicArea);
-  fillDropdown("lastSouth", southArea);
-  fillDropdown("lastNorth", northArea);
-  const stateSnap = await getDoc(STATE_DOC);
-  if (stateSnap.exists()) {
-    const s = stateSnap.data();
-    if (s.lastPublic) document.getElementById("lastPublic").value = s.lastPublic;
-    if (s.lastSouth) document.getElementById("lastSouth").value = s.lastSouth;
-    if (s.lastNorth) document.getElementById("lastNorth").value = s.lastNorth;
-  }
+window.onload = () => {
+  loadTheme();
+  if(localStorage.getItem("lastPublic")) document.getElementById("lastPublic").value = localStorage.getItem("lastPublic");
+  if(localStorage.getItem("lastSouth")) document.getElementById("lastSouth").value = localStorage.getItem("lastSouth");
+  if(localStorage.getItem("lastNorth")) document.getElementById("lastNorth").value = localStorage.getItem("lastNorth");
+  
+  // 设置日期选择器默认值为今天
+  const today = new Date();
+  const dateStr = today.getFullYear() + '-' + 
+                  String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                  String(today.getDate()).padStart(2, '0');
+  document.getElementById("selectedDate").value = dateStr;
+  
   setEditLockState();
-  await checkAndAutoRotate();
+  checkAndAutoRotate();
   updateTime();
   setInterval(updateTime, 1000);
 }
-
-// 将需要在 HTML 中通过 onclick 调用的函数挂到全局
-window.toggleTheme = toggleTheme;
-window.toggleMenu = toggleMenu;
-window.unlockEdit = unlockEdit;
-window.manualCalculateThisWeek = manualCalculateThisWeek;
 </script>
 
 </body>

@@ -3,28 +3,110 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>值日轮值系统 - 成员管理</title>
+<title>HomeHotel 值日轮值系统 - 成员管理</title>
 <style>
-  /* 全局样式 */
+  :root {
+    --bg-gradient-start: #e0f0ff;
+    --bg-gradient-end: #f0f4f8;
+    --primary-color: #1e3d59;
+    --primary-hover: #3a5a77;
+    --text-color: #333;
+    --card-bg: #fff;
+    --shadow: rgba(0,0,0,0.08);
+    --border-color: #ccc;
+    --success-color: #28a745;
+    --error-color: #dc3545;
+    --drag-bg: linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%);
+    --drag-over-bg: linear-gradient(135deg, #e3f2fd 0%, #f0f4ff 100%);
+    --drag-border: #667eea;
+    --member-border: rgba(255,255,255,0.3);
+    --info-bg: linear-gradient(135deg, #e3f2fd 0%, #f0f4ff 100%);
+    --info-text: #0c5460;
+    --info-border: #667eea;
+    --success-bg: #d4edda;
+    --success-text: #155724;
+  }
+
+  [data-theme="dark"] {
+    --bg-gradient-start: #1a1a2e;
+    --bg-gradient-end: #16213e;
+    --primary-color: #4a90e2;
+    --primary-hover: #357abd;
+    --text-color: #f5f5f5;
+    --card-bg: #2d3748;
+    --shadow: rgba(0,0,0,0.3);
+    --border-color: #4a5568;
+    --drag-bg: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+    --drag-over-bg: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+    --drag-border: #4a90e2;
+    --member-border: rgba(74, 85, 104, 0.5);
+    --info-bg: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+    --info-text: #e2e8f0;
+    --info-border: #4a90e2;
+    --success-bg: #2d5a3d;
+    --success-text: #68d391;
+  }
+
+  * {
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  }
+
   body {
     font-family: "Microsoft YaHei", Arial, sans-serif;
-    background: linear-gradient(to bottom, #e0f0ff, #f0f4f8);
+    background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
     margin: 0;
     padding: 0;
-    color: #333;
+    color: var(--text-color);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
   }
+
+  body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
   h1 {
     text-align: center;
     padding: 40px 0 20px 0;
-    color: #1e3d59;
-    font-size: 2.2em;
+    color: var(--primary-color);
+    font-size: 2.5em;
     margin: 0;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    animation: fadeInDown 0.8s ease;
+    position: relative;
+    z-index: 1;
   }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   .container {
     width: 90%;
     max-width: 800px;
     margin: auto;
     padding: 20px;
+    position: relative;
+    z-index: 1;
   }
   
   /* 响应式样式 */
@@ -55,83 +137,330 @@
 
   /* 区域选择部分 */
   .section {
-    background: #fff;
-    padding: 25px 20px;
+    background: var(--card-bg);
+    padding: 30px 25px;
     margin-bottom: 30px;
-    border-radius: 14px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    border-radius: 20px;
+    box-shadow: 
+      0 20px 40px rgba(0,0,0,0.1),
+      0 8px 16px rgba(0,0,0,0.05),
+      inset 0 1px 0 rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    animation: slideInUp 0.8s ease;
+    position: relative;
+    overflow: hidden;
   }
+
+  .section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c);
+    background-size: 200% 100%;
+    animation: gradientShift 3s ease infinite;
+  }
+
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
   .section h2 {
     margin-top: 0;
-    color: #1e3d59;
-    font-size: 1.5em;
-    border-bottom: 2px solid #1e3d59;
-    padding-bottom: 8px;
+    color: var(--primary-color);
+    font-size: 1.6em;
+    font-weight: 600;
+    border-bottom: 3px solid var(--primary-color);
+    padding-bottom: 12px;
+    position: relative;
+  }
+
+  .section h2::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 2px;
   }
   
   /* 表单样式 */
   .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    position: relative;
   }
   
   label {
     display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 1.1em;
+    position: relative;
+  }
+
+  label::before {
+    content: '';
+    position: absolute;
+    left: -15px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 20px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 2px;
   }
   
   select, input[type="text"] {
     width: 100%;
-    padding: 10px 12px;
-    font-size: 1em;
-    border-radius: 8px;
-    border: 1px solid #ccc;
+    padding: 15px 20px;
+    font-size: 1.1em;
+    border-radius: 12px;
+    border: 2px solid var(--border-color);
     box-sizing: border-box;
+    transition: all 0.3s ease;
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(5px);
+    color: var(--text-color);
+  }
+
+  select:focus, input[type="text"]:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 
+      0 0 0 4px rgba(30, 61, 89, 0.1),
+      0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+    background: rgba(255,255,255,0.95);
+  }
+
+  select:hover, input[type="text"]:hover {
+    border-color: var(--primary-hover);
+    transform: translateY(-1px);
   }
   
   .btn {
-    background: #1e3d59;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
     color: #fff;
     border: none;
-    padding: 12px 20px;
-    border-radius: 10px;
+    padding: 15px 30px;
+    border-radius: 12px;
     cursor: pointer;
-    font-size: 1em;
-    margin-top: 15px;
-    transition: all 0.3s ease;
+    font-size: 1.1em;
+    font-weight: 600;
+    margin-top: 20px;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(30, 61, 89, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  .btn:hover::before {
+    left: 100%;
   }
   
   .btn:hover {
-    background: #3a5a77;
-    transform: translateY(-2px);
+    background: linear-gradient(135deg, var(--primary-hover), var(--primary-color));
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(30, 61, 89, 0.4);
+  }
+
+  .btn:active {
+    transform: translateY(-1px) scale(0.98);
+    transition: all 0.1s ease;
   }
   
   .btn-danger {
-    background: #e74c3c;
+    background: linear-gradient(135deg, var(--error-color), #c0392b);
   }
   
   .btn-danger:hover {
-    background: #c0392b;
+    background: linear-gradient(135deg, #c0392b, var(--error-color));
+    box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
   }
   
   /* 成员列表样式 */
   .member-list {
-    margin-top: 20px;
+    margin-top: 25px;
+    /* 防止手机端拖拽时页面滚动 */
+    touch-action: none;
+    -webkit-overflow-scrolling: touch;
   }
   
   .member-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 15px;
-    margin-bottom: 10px;
-    background: #f8f9fa;
-    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    cursor: move;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    /* 防止手机端拖拽时页面滚动 */
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    border: 2px solid var(--member-border);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  }
+  
+  .member-item:hover {
+    background: var(--card-bg);
+    opacity: 0.9;
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    border-color: var(--primary-color);
+  }
+  
+  .member-item.dragging {
+    opacity: 0.8;
+    transform: rotate(3deg) scale(1.02);
+    z-index: 1000;
+    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.3), 
+                0 8px 25px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(102, 126, 234, 0.2);
+    background: var(--drag-bg);
+    border: 2px solid var(--drag-border);
+    color: var(--text-color);
+  }
+  
+  .member-item.drag-over {
+    border-top: 4px solid var(--drag-border);
+    background: var(--drag-over-bg);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+    color: var(--text-color);
+  }
+  
+  .member-item.drag-over::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 2px;
+  }
+  
+  .drag-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px;
+    margin-right: 15px;
+    cursor: grab;
+    font-size: 1.6em;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3), 
+                0 2px 8px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    user-select: none;
+    -webkit-user-select: none;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .drag-handle::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+  }
+  
+  .drag-handle:hover {
+    transform: scale(1.05) translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4), 
+                0 4px 12px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  }
+  
+  .drag-handle:hover::before {
+    left: 100%;
+  }
+  
+  .drag-handle:active {
+    cursor: grabbing;
+    transform: scale(0.95) translateY(0);
+    transition: all 0.1s ease;
+  }
+  
+  .member-item.dragging .drag-handle {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4), 
+                0 4px 15px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+  
+  .drag-handle-icon {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .drag-handle-icon::before,
+  .drag-handle-icon::after {
+    content: '';
+    width: 4px;
+    height: 4px;
+    background: currentColor;
+    border-radius: 50%;
+    display: block;
+  }
+  
+  .drag-handle-icon::before {
+    margin-bottom: 2px;
   }
   
   .member-name {
     font-size: 1.1em;
     flex: 1;
+    margin-left: 10px;
   }
   
   .member-actions {
@@ -143,16 +472,21 @@
     background: #dc3545;
     color: white;
     border: none;
-    padding: 5px 10px;
+    padding: 8px 12px;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 0.9em;
+    transition: all 0.3s ease;
   }
   
+  .member-actions button:hover {
+    background: #c82333;
+    transform: translateY(-1px);
+  }
+  
+  /* 移除旧的移动按钮样式 */
   .move-btn {
-    background: #1e3d59 !important;
-    font-size: 1.2em;
-    width: 36px;
-    height: 36px;
+    display: none;
   }
   
   /* 导航链接 */
@@ -162,7 +496,7 @@
   }
   
   .nav-links a {
-    color: #1e3d59;
+    color: var(--primary-color);
     text-decoration: none;
     margin: 0 10px;
     font-weight: bold;
@@ -176,15 +510,69 @@
   @media (max-width: 600px) {
     .btn { width: 100%; text-align: center; }
   }
+
+  .theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 50%;
+    width: 55px;
+    height: 55px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6em;
+    z-index: 1000;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3), 
+                0 4px 12px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .theme-toggle:hover {
+    transform: scale(1.15) rotate(20deg);
+    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4), 
+                0 6px 20px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  }
+
+  .theme-toggle:active {
+    transform: scale(1.05) rotate(10deg);
+    transition: all 0.1s ease;
+  }
+
+  [data-theme="dark"] .theme-toggle {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    box-shadow: 0 8px 25px rgba(252, 182, 159, 0.3), 
+                0 4px 12px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  [data-theme="dark"] .theme-toggle:hover {
+    background: linear-gradient(135deg, #fcb69f 0%, #ffecd2 100%);
+    box-shadow: 0 12px 35px rgba(252, 182, 159, 0.4), 
+                0 6px 20px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
 </style>
 </head>
 <body>
 
-<h1>值日轮值系统 - 成员管理</h1>
+<div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+  <span id="themeIcon">🌙</span>
+</div>
+
+<h1>HomeHotel 值日轮值系统 - 成员管理</h1>
 
 <div class="container">
   <div class="nav-links" style="text-align: center; margin-bottom: 20px;">
-    <button onclick="window.location.href='index.html'" class="btn" style="background: #1e3d59; color: #fff; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-size: 1em; transition: all 0.3s ease;">返回主页</button>
+    <button onclick="window.location.href='index.html'" class="btn" style="background: var(--primary-color); color: #fff; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-size: 1em; transition: all 0.3s ease;">返回主页</button>
   </div>
 
   <div class="section">
@@ -214,89 +602,75 @@
         <option value="northArea">北卧+厅卧</option>
       </select>
     </div>
-    <div class="alert" style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
-      <strong>提示：</strong>调整成员顺序将直接影响值日轮值顺序。拖动成员可以改变他们的值日顺序。
+    <div class="alert" style="background: var(--info-bg); color: var(--info-text); padding: 15px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid var(--info-border); box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);">
+      <div style="display: flex; align-items: center; margin-bottom: 10px;">
+        <div style="width: 30px; height: 30px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px; color: white; font-size: 1.2em;">💡</div>
+        <strong style="font-size: 1.1em;">拖拽排序使用说明</strong>
+      </div>
+      <div style="margin-left: 40px;">
+        <div style="margin-bottom: 8px;">🖱️ <strong>电脑端：</strong>点击并拖拽左侧的彩色圆点图标来调整成员顺序</div>
+        <div style="margin-bottom: 8px;">📱 <strong>手机端：</strong>长按成员项目并上下滑动来调整顺序</div>
+        <div style="margin-bottom: 0;">💾 <strong>保存修改：</strong>调整完成后请点击"保存修改"按钮保存更改</div>
+      </div>
     </div>
-    <div id="saveStatus" style="display: none; background-color: #d4edda; color: #155724; padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: center; font-weight: bold;">
+    <div id="saveStatus" style="display: none; background-color: var(--success-bg); color: var(--success-text); padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: center; font-weight: bold;">
       保存成功！
     </div>
     <div id="memberList" class="member-list">
       <!-- 成员列表将在这里动态生成 -->
     </div>
-    <button class="btn" onclick="saveData()" style="margin-top: 20px; background-color: #28a745;">保存修改</button>
+    <button class="btn" onclick="saveData()" style="margin-top: 20px; background-color: var(--success-color);">保存修改</button>
   </div>
 </div>
 
-<script type="module">
-import { db, ADMIN_USERNAME, ADMIN_PASSWORD } from './firebase-config.js';
-import { doc, getDoc, setDoc, addDoc, collection } from 'https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js';
-
-// 简单登录检查（沿用本地会话标记）
+<script>
+// 检查用户是否已登录
 (function checkLogin() {
-  const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+  const isLoggedIn = localStorage.getItem('isLoggedIn');
   if (isLoggedIn !== 'true') {
+    // 未登录，重定向到登录页面
     window.location.href = 'login.html';
-    return;
   }
-  // 二次校验（可选）：若未来需要用户名校验，可扩展
 })();
 
-const MEMBERS_DOC = doc(db, 'members', 'areas');
-const LOGS_COL = collection(db, 'operationLogs');
-
-async function logOperation(action, details) {
-  await addDoc(LOGS_COL, { timestamp: new Date().toISOString(), action, details });
+// 记录操作日志
+function addLog(action, details) {
+  const logs = JSON.parse(localStorage.getItem('operationLogs') || '[]');
+  logs.unshift({
+    timestamp: new Date().toISOString(),
+    action: action,
+    details: details
+  });
+  
+  if (logs.length > 200) logs.pop();
+  
+  localStorage.setItem('operationLogs', JSON.stringify(logs));
 }
 
-let publicArea = [];
-let southArea = [];
-let northArea = [];
+// 从localStorage获取区域数据，如果没有则使用默认值
+let publicArea = JSON.parse(localStorage.getItem('publicAreaMembers')) || ["镇","旭","大龙","原","磊","泽","深","淏","叶","飞","学治","勇","清","义志","枫","峰","星宇","茏","龚","军","帆","叶","林","前","哲","圣"];
+let southArea = JSON.parse(localStorage.getItem('southAreaMembers')) || ["叶","峰","浩","学治","深","清","义志","泽","龙","旭","飞","茏","龚","帆"];
+let northArea = JSON.parse(localStorage.getItem('northAreaMembers')) || ["原","枫","磊","星宇","镇","军","前","哲","圣","林","淏"];
 
-async function loadMembers() {
-  try {
-    const snap = await getDoc(MEMBERS_DOC);
-    if (!snap.exists()) {
-      publicArea = ["镇","旭","大龙","原","磊","泽","深","淏","叶","飞","学治","勇","清","义志","枫","峰","星宇","茏","龚","军","帆","叶","林","前","哲","圣"];
-      southArea = ["叶","峰","浩","学治","深","清","义志","泽","龙","旭","飞","茏","龚","帆"];
-      northArea = ["原","枫","磊","星宇","镇","军","前","哲","圣","林","淏"];
-      await setDoc(MEMBERS_DOC, {
-        publicAreaMembers: publicArea,
-        southAreaMembers: southArea,
-        northAreaMembers: northArea
-      });
-    } else {
-      const d = snap.data();
-      publicArea = d.publicAreaMembers || [];
-      southArea = d.southAreaMembers || [];
-      northArea = d.northAreaMembers || [];
-    }
-  } catch (e) {
-    alert('加载成员数据失败，请检查网络或 Firestore 规则');
-    console.error(e);
-  }
-}
-
-async function saveData() {
-  try {
-    await setDoc(MEMBERS_DOC, {
-      publicAreaMembers: publicArea,
-      southAreaMembers: southArea,
-      northAreaMembers: northArea
-    }, { merge: true });
-    const saveStatus = document.getElementById('saveStatus');
-    if (saveStatus) {
-      saveStatus.textContent = '保存成功！';
-      saveStatus.style.display = 'block';
-      setTimeout(() => { saveStatus.style.display = 'none'; }, 2000);
-    }
-  } catch (e) {
-    alert('保存失败，请检查网络或 Firestore 规则');
-    console.error(e);
+// 保存数据到localStorage
+function saveData() {
+  localStorage.setItem('publicAreaMembers', JSON.stringify(publicArea));
+  localStorage.setItem('southAreaMembers', JSON.stringify(southArea));
+  localStorage.setItem('northAreaMembers', JSON.stringify(northArea));
+  
+  // 显示保存成功提示
+  const saveStatus = document.getElementById('saveStatus');
+  if (saveStatus) {
+    saveStatus.textContent = '保存成功！';
+    saveStatus.style.display = 'block';
+    setTimeout(() => {
+      saveStatus.style.display = 'none';
+    }, 2000);
   }
 }
 
 // 添加成员
-async function addMember() {
+function addMember() {
   const area = document.getElementById('areaSelect').value;
   const name = document.getElementById('newMember').value.trim();
   
@@ -334,14 +708,10 @@ async function addMember() {
   }
   
   // 记录操作日志
-  try {
-    await logOperation('添加成员', `在 ${area} 添加了成员 ${name}`);
-    await saveData();
-  } catch (e) {
-    alert('添加失败，请检查网络或 Firestore 规则');
-    console.error(e);
-    return;
-  }
+  addLog('添加成员', `在 ${area} 添加了成员 ${name}`);
+
+  // 保存数据并刷新显示
+  saveData();
   document.getElementById('newMember').value = '';
   
   // 如果当前查看的区域与添加的区域相同，则刷新显示
@@ -353,7 +723,7 @@ async function addMember() {
 }
 
 // 删除成员
-async function deleteMember(area, name) {
+function deleteMember(area, name) {
   if (confirm(`确定要删除 ${name} 吗？`)) {
     switch(area) {
       case 'publicArea':
@@ -368,14 +738,10 @@ async function deleteMember(area, name) {
     }
     
     // 记录操作日志
-    try {
-      await logOperation('删除成员', `从 ${area} 删除了成员 ${name}`);
-      await saveData();
-    } catch (e) {
-      alert('删除失败，请检查网络或 Firestore 规则');
-      console.error(e);
-      return;
-    }
+    addLog('删除成员', `从 ${area} 删除了成员 ${name}`);
+
+    // 保存数据并刷新显示
+    saveData();
     displayMembers();
   }
 }
@@ -416,6 +782,18 @@ function displayMembers() {
     memberItem.dataset.area = area;
     memberItem.dataset.index = index;
     
+    // 创建拖拽手柄
+    const dragHandle = document.createElement('div');
+    dragHandle.className = 'drag-handle';
+    dragHandle.innerHTML = `
+      <div class="drag-handle-icon">
+        <div style="width: 3px; height: 3px; background: currentColor; border-radius: 50%; margin-bottom: 3px; opacity: 0.8;"></div>
+        <div style="width: 3px; height: 3px; background: currentColor; border-radius: 50%; margin-bottom: 3px; opacity: 0.9;"></div>
+        <div style="width: 3px; height: 3px; background: currentColor; border-radius: 50%; opacity: 1;"></div>
+      </div>
+    `;
+    dragHandle.title = '拖拽调整顺序';
+    
     const memberName = document.createElement('div');
     memberName.className = 'member-name';
     memberName.textContent = name;
@@ -423,72 +801,212 @@ function displayMembers() {
     const memberActions = document.createElement('div');
     memberActions.className = 'member-actions';
     
-    // 添加上移按钮
-    if (index > 0) {
-      const upButton = document.createElement('button');
-      upButton.textContent = '↑';
-      upButton.className = 'move-btn';
-      upButton.onclick = () => moveUp(area, index);
-      memberActions.appendChild(upButton);
-    }
-    
-    // 添加下移按钮
-    if (index < members.length - 1) {
-      const downButton = document.createElement('button');
-      downButton.textContent = '↓';
-      downButton.className = 'move-btn';
-      downButton.onclick = () => moveDown(area, index);
-      memberActions.appendChild(downButton);
-    }
-    
     const deleteButton = document.createElement('button');
     deleteButton.textContent = '删除';
     deleteButton.onclick = () => deleteMember(area, name);
     
     memberActions.appendChild(deleteButton);
+    memberItem.appendChild(dragHandle);
     memberItem.appendChild(memberName);
     memberItem.appendChild(memberActions);
     memberListElement.appendChild(memberItem);
   });
+  
+  // 初始化拖拽功能
+  initializeDragAndDrop();
 }
 
-// 上下移动成员函数
-function moveUp(area, index) {
-  if (index <= 0) return;
+// 旧的移动函数已移除，现在使用拖拽功能
+
+// 拖拽相关变量
+let draggedElement = null;
+let draggedIndex = -1;
+let draggedArea = '';
+
+// 初始化拖拽功能
+function initializeDragAndDrop() {
+  const memberItems = document.querySelectorAll('.member-item');
   
-  let members = [];
-  switch(area) {
-    case 'publicArea':
-      members = publicArea;
-      break;
-    case 'southArea':
-      members = southArea;
-      break;
-    case 'northArea':
-      members = northArea;
-      break;
+  memberItems.forEach((item, index) => {
+    // 鼠标事件 - 使用mousedown和mousemove实现拖拽
+    item.addEventListener('mousedown', handleMouseDown);
+    
+    // 触摸事件（手机端）
+    item.addEventListener('touchstart', handleTouchStart, { passive: false });
+    item.addEventListener('touchmove', handleTouchMove, { passive: false });
+    item.addEventListener('touchend', handleTouchEnd, { passive: false });
+  });
+  
+  // 全局鼠标事件
+  document.addEventListener('mousemove', handleMouseMove);
+  document.addEventListener('mouseup', handleMouseUp);
+}
+
+// 鼠标拖拽相关变量
+let isMouseDragging = false;
+let mouseStartY = 0;
+let mouseStartX = 0;
+
+// 鼠标按下开始拖拽
+function handleMouseDown(e) {
+  // 只允许通过拖拽手柄开始拖拽
+  if (!e.target.classList.contains('drag-handle')) return;
+  
+  e.preventDefault();
+  isMouseDragging = true;
+  draggedElement = e.currentTarget;
+  draggedElement.classList.add('dragging');
+  draggedIndex = parseInt(draggedElement.dataset.index);
+  draggedArea = draggedElement.dataset.area;
+  
+  mouseStartY = e.clientY;
+  mouseStartX = e.clientX;
+  
+  // 防止文本选择
+  document.body.style.userSelect = 'none';
+  document.body.style.cursor = 'grabbing';
+}
+
+// 鼠标移动处理拖拽
+function handleMouseMove(e) {
+  if (!isMouseDragging || !draggedElement) return;
+  
+  e.preventDefault();
+  
+  // 更新拖拽位置
+  const afterElement = getDragAfterElement(draggedElement.parentNode, e.clientY);
+  if (afterElement == null) {
+    draggedElement.parentNode.appendChild(draggedElement);
+  } else {
+    draggedElement.parentNode.insertBefore(draggedElement, afterElement);
+  }
+}
+
+// 鼠标释放结束拖拽
+function handleMouseUp(e) {
+  if (isMouseDragging && draggedElement) {
+    draggedElement.classList.remove('dragging');
+    updateMemberOrder();
   }
   
-  // 交换位置
-  const temp = members[index];
-  members[index] = members[index - 1];
-  members[index - 1] = temp;
+  // 重置拖拽状态
+  isMouseDragging = false;
+  draggedElement = null;
+  draggedIndex = -1;
+  draggedArea = '';
   
-  // 更新对应的区域数组
-  switch(area) {
-    case 'publicArea':
-      publicArea = members;
-      break;
-    case 'southArea':
-      southArea = members;
-      break;
-    case 'northArea':
-      northArea = members;
-      break;
+  // 恢复页面样式
+  document.body.style.userSelect = '';
+  document.body.style.cursor = '';
+  
+  // 移除所有拖拽相关样式
+  document.querySelectorAll('.member-item').forEach(item => {
+    item.classList.remove('drag-over');
+  });
+}
+
+// 触摸事件处理（手机端）
+let touchStartY = 0;
+let touchStartX = 0;
+let isDragging = false;
+let touchElement = null;
+
+function handleTouchStart(e) {
+  if (e.touches.length !== 1) return;
+  
+  touchElement = e.currentTarget;
+  touchStartY = e.touches[0].clientY;
+  touchStartX = e.touches[0].clientX;
+  isDragging = false;
+  
+  // 防止页面滚动
+  e.preventDefault();
+}
+
+function handleTouchMove(e) {
+  if (e.touches.length !== 1 || !touchElement) return;
+  
+  const touchY = e.touches[0].clientY;
+  const touchX = e.touches[0].clientX;
+  const deltaY = Math.abs(touchY - touchStartY);
+  const deltaX = Math.abs(touchX - touchStartX);
+  
+  // 如果垂直移动距离大于水平移动距离，且移动距离超过阈值，则开始拖拽
+  if (deltaY > 10 && deltaY > deltaX) {
+    if (!isDragging) {
+      isDragging = true;
+      touchElement.classList.add('dragging');
+      draggedElement = touchElement;
+      draggedIndex = parseInt(touchElement.dataset.index);
+      draggedArea = touchElement.dataset.area;
+    }
+    
+    // 防止页面滚动
+    e.preventDefault();
+    
+    // 更新拖拽位置
+    const afterElement = getDragAfterElement(touchElement.parentNode, touchY);
+    if (afterElement == null) {
+      touchElement.parentNode.appendChild(touchElement);
+    } else {
+      touchElement.parentNode.insertBefore(touchElement, afterElement);
+    }
+  }
+}
+
+function handleTouchEnd(e) {
+  if (isDragging && touchElement) {
+    touchElement.classList.remove('dragging');
+    updateMemberOrder();
   }
   
-  // 重新显示成员列表
-  displayMembers();
+  isDragging = false;
+  touchElement = null;
+  draggedElement = null;
+  draggedIndex = -1;
+  draggedArea = '';
+}
+
+// 获取拖拽后的位置
+function getDragAfterElement(container, y) {
+  const draggableElements = [...container.querySelectorAll('.member-item:not(.dragging)')];
+  
+  return draggableElements.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    
+    if (offset < 0 && offset > closest.offset) {
+      return { offset: offset, element: child };
+    } else {
+      return closest;
+    }
+  }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
+// 更新成员顺序
+function updateMemberOrder() {
+  const memberList = document.getElementById('memberList');
+  const memberItems = memberList.querySelectorAll('.member-item');
+  const newOrder = [];
+  
+  memberItems.forEach((item, index) => {
+    const name = item.dataset.name;
+    newOrder.push(name);
+    item.dataset.index = index;
+  });
+  
+  // 更新对应区域的数组
+  switch(draggedArea) {
+    case 'publicArea':
+      publicArea = newOrder;
+      break;
+    case 'southArea':
+      southArea = newOrder;
+      break;
+    case 'northArea':
+      northArea = newOrder;
+      break;
+  }
   
   // 显示保存提示
   const saveStatus = document.getElementById('saveStatus');
@@ -496,68 +1014,42 @@ function moveUp(area, index) {
     saveStatus.textContent = '顺序已更改，请点击"保存修改"按钮保存';
     saveStatus.style.display = 'block';
   }
-  logOperation('调整顺序', `在 ${area} 将成员 ${members[index]} 和 ${members[index - 1]} 的顺序对调`);
+  
+  // 记录操作日志
+  addLog('调整顺序', `在 ${draggedArea} 通过拖拽调整了成员顺序`);
 }
 
-function moveDown(area, index) {
-  let members = [];
-  switch(area) {
-    case 'publicArea':
-      members = publicArea;
-      break;
-    case 'southArea':
-      members = southArea;
-      break;
-    case 'northArea':
-      members = northArea;
-      break;
+// 主题切换功能
+function toggleTheme() {
+  const body = document.body;
+  const themeIcon = document.getElementById('themeIcon');
+  
+  if (body.getAttribute('data-theme') === 'dark') {
+    body.removeAttribute('data-theme');
+    themeIcon.textContent = '🌙';
+    localStorage.setItem('theme', 'light');
+  } else {
+    body.setAttribute('data-theme', 'dark');
+    themeIcon.textContent = '☀️';
+    localStorage.setItem('theme', 'dark');
   }
-  
-  if (index >= members.length - 1) return;
-  
-  // 交换位置
-  const temp = members[index];
-  members[index] = members[index + 1];
-  members[index + 1] = temp;
-  
-  // 更新对应的区域数组
-  switch(area) {
-    case 'publicArea':
-      publicArea = members;
-      break;
-    case 'southArea':
-      southArea = members;
-      break;
-    case 'northArea':
-      northArea = members;
-      break;
-  }
-  
-  // 重新显示成员列表
-  displayMembers();
-  
-  // 显示保存提示
-  const saveStatus = document.getElementById('saveStatus');
-  if (saveStatus) {
-    saveStatus.textContent = '顺序已更改，请点击"保存修改"按钮保存';
-    saveStatus.style.display = 'block';
-  }
-  logOperation('调整顺序', `在 ${area} 将成员 ${members[index]} 和 ${members[index + 1]} 的顺序对调`);
 }
 
 // 页面加载时显示成员列表
-window.onload = async () => {
-  await loadMembers();
+window.onload = () => {
   displayMembers();
+  
+  // 应用保存的主题
+  const savedTheme = localStorage.getItem('theme');
+  const themeIcon = document.getElementById('themeIcon');
+  
+  if (savedTheme === 'dark') {
+    document.body.setAttribute('data-theme', 'dark');
+    themeIcon.textContent = '☀️';
+  } else {
+    themeIcon.textContent = '🌙';
+  }
 };
-
-// 将需要在 HTML 中通过 onclick 调用的函数挂到全局
-window.addMember = addMember;
-window.deleteMember = deleteMember;
-window.saveData = saveData;
-window.displayMembers = displayMembers;
-window.moveUp = moveUp;
-window.moveDown = moveDown;
 </script>
 
 </body>
